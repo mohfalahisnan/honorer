@@ -1,19 +1,17 @@
 {
-  "compilerOptions": {
-    "target": "ESNext",
-    "module": "ESNext",
-    "moduleResolution": "Bundler",
-    "strict": true,
-    "verbatimModuleSyntax": true,
-    "skipLibCheck": true,
-    "experimentalDecorators": true,
-    "emitDecoratorMetadata": true,
-    "useDefineForClassFields": false,
-    "types": [
-      "node"
-    ],
-    "rootDir": "./src",
-    "outDir": "./dist"
-  },
-  "exclude": ["node_modules", "dist","vitest.config.ts"]
+	"compilerOptions": {
+		"target": "ESNext",
+		"module": "ESNext",
+		"moduleResolution": "Bundler",
+		"strict": true,
+		"verbatimModuleSyntax": true,
+		"skipLibCheck": true,
+		"experimentalDecorators": true,
+		"emitDecoratorMetadata": true,
+		"useDefineForClassFields": false,
+		"types": ["node"],
+		"rootDir": "./src",
+		"outDir": "./dist"
+	},
+	"exclude": ["node_modules", "dist", "vitest.config.ts"]
 }

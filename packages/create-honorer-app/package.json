@@ -1,21 +1,21 @@
 {
-  "name": "create-honorer-app",
-  "version": "0.1.1",
-  "private": false,
-  "type": "module",
-  "bin": {
-    "create-honorer-app": "dist/src/index.js"
-  },
-  "scripts": {
-    "build": "tsc",
-    "start": "node index.js",
-    "prepublishOnly": "pnpm run build",
-    "test": "vitest"
-  },
-  "devDependencies": {
-    "@types/node": "^20.11.17",
-    "tsx": "^4.20.6",
-    "typescript": "^5.9.3",
-    "vitest": "^4.0.1"
-  }
+	"name": "create-honorer-app",
+	"version": "0.1.1",
+	"private": false,
+	"type": "module",
+	"bin": {
+		"create-honorer-app": "dist/src/index.js"
+	},
+	"scripts": {
+		"build": "tsc",
+		"start": "node index.js",
+		"prepublishOnly": "pnpm run build",
+		"test": "vitest"
+	},
+	"devDependencies": {
+		"@types/node": "^20.11.17",
+		"tsx": "^4.20.6",
+		"typescript": "^5.9.3",
+		"vitest": "^4.0.1"
+	}
 }
