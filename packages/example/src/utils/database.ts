@@ -1,7 +1,7 @@
 import { Database } from "@honorer/core";
 import { PostgresDialect } from "kysely";
 import { Pool } from "pg";
-import type { Database as DB } from "../../type";
+import type { Database as DB } from "../type";
 
 const dialect = new PostgresDialect({
 	pool: new Pool({
