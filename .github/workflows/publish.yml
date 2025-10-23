@@ -25,6 +25,7 @@ jobs:
         with:
           version: 9
           run_install: false
+          standalone: true
 
       - name: Verify pnpm (fallback via corepack if missing)
         shell: bash
