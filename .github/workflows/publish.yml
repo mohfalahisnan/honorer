@@ -23,8 +23,18 @@ jobs:
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
         with:
-          version: 10
+          version: 9
           run_install: false
+
+      - name: Verify pnpm (fallback via corepack if missing)
+        shell: bash
+        run: |
+          if ! command -v pnpm >/dev/null 2>&1; then
+            echo "pnpm not found; enabling Corepack and activating pnpm@9"
+            corepack enable
+            corepack prepare pnpm@9 --activate
+          fi
+          pnpm -v
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
