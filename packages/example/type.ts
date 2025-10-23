@@ -6,6 +6,7 @@ import type {
     Selectable,
     Updateable,
 } from 'kysely'
+import { z } from 'zod'
 
 export interface Database {
   person: PersonTable
@@ -70,3 +71,77 @@ export interface PetTable {
 export type Pet = Selectable<PetTable>
 export type NewPet = Insertable<PetTable>
 export type PetUpdate = Updateable<PetTable>
+
+// Zod schemas derived from Kysely types:
+
+// Person metadata object (select shape)
+export const personMetadataSelectableSchema = z.object({
+  login_at: z.string(),
+  ip: z.string().nullable(),
+  agent: z.string().nullable(),
+  plan: z.enum(['free', 'premium']),
+})
+
+// Person: selectable result (matches Selectable<PersonTable>)
+export const personSelectableSchema = z.object({
+  id: z.number(),
+  first_name: z.string(),
+  gender: z.enum(['man', 'woman', 'other']),
+  last_name: z.string().nullable(),
+  created_at: z.date(),
+  metadata: personMetadataSelectableSchema,
+})
+
+// Person: insert payload (matches Insertable<PersonTable>)
+// - id optional (Generated)
+// - created_at optional string
+// - metadata is a string (JSONColumnType insert type)
+export const personInsertSchema = z.object({
+  id: z.number().optional(),
+  first_name: z.string(),
+  gender: z.enum(['man', 'woman', 'other']),
+  last_name: z.string().nullable(),
+  created_at: z.string().optional(),
+  metadata: z.string(),
+})
+
+// Person: update payload (matches Updateable<PersonTable>)
+// - all updatable fields optional
+// - created_at excluded (never updatable)
+export const personUpdateSchema = z
+  .object({
+    id: z.number(),
+    first_name: z.string(),
+    gender: z.enum(['man', 'woman', 'other']),
+    last_name: z.string().nullable(),
+    metadata: z.string(),
+  })
+  .partial()
+
+// Pet: selectable result (matches Selectable<PetTable>)
+export const petSelectableSchema = z.object({
+  id: z.number(),
+  name: z.string(),
+  owner_id: z.number(),
+  species: z.enum(['dog', 'cat']),
+})
+
+// Pet: insert payload (matches Insertable<PetTable>)
+// - id optional (Generated)
+export const petInsertSchema = z.object({
+  id: z.number().optional(),
+  name: z.string(),
+  owner_id: z.number(),
+  species: z.enum(['dog', 'cat']),
+})
+
+// Pet: update payload (matches Updateable<PetTable>)
+// - all fields optional
+export const petUpdateSchema = z
+  .object({
+    id: z.number(),
+    name: z.string(),
+    owner_id: z.number(),
+    species: z.enum(['dog', 'cat']),
+  })
+  .partial()

@@ -4,16 +4,22 @@
   "type": "module",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
+  "files": [
+    "dist",
+    "package.json",
+    "README.md"
+  ],
+  "sideEffects": false,
   "publishConfig": {
     "access": "public"
   },
   "exports": {
     ".": {
-      "types": "./dist/index.d.ts",
-      "import": "./dist/index.js"
+      "types": "./src/index.ts",
+      "import": "./src/index.ts"
     },
     "./serve": {
-      "import": "./dist/serve.js"
+      "import": "./src/serve.ts"
     },
     "./package.json": "./package.json"
   },
@@ -22,18 +28,26 @@
     "build": "tsc",
     "start": "node dist/serve.js",
     "prepublishOnly": "pnpm run build",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "test": "vitest"
   },
   "dependencies": {
-    "@hono/node-server": "^1.19.5",
-    "hono": "^4.10.2",
-    "kysely": "^0.28.8",
     "reflect-metadata": "^0.2.2"
   },
   "devDependencies": {
+    "@hono/node-server": "^1.19.5",
     "@types/node": "^20.11.17",
-    "prisma": "^6.18.0",
+    "hono": "^4.10.2",
+    "kysely": "^0.28.8",
     "tsx": "^4.7.1",
-    "typescript": "^5.8.3"
+    "typescript": "^5.8.3",
+    "vitest": "^4.0.1",
+    "zod": "^4.1.12"
+  },
+  "peerDependencies": {
+    "@hono/node-server": "^1.19.5",
+    "hono": "^4.10.2",
+    "kysely": "^0.28.8",
+    "zod": "^4.1.12"
   }
 }

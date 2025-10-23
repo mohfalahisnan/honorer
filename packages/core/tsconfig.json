@@ -8,6 +8,9 @@
     "skipLibCheck": true,
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
+    "forceConsistentCasingInFileNames": true,
+    "allowJs": false,
+    "useDefineForClassFields": false,
     "types": [
       "node"
     ],
