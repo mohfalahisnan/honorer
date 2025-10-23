@@ -16,3 +16,5 @@ export {
 export type { ParamsContext, ParamSchemaBinding } from './params'
 export { Query, getQuerySchemaBindings, queryOf } from './query'
 export type { QuerySchemaBinding } from './query'
+export { Body, getBodySchemaBindings, bodyOf } from './body'
+export type { BodySchemaBinding } from './body'

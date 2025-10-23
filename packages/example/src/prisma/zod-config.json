@@ -1,0 +1,16 @@
+{
+	"mode": "full",
+	"pureModels": true,
+	"variants": {
+		"pure": {
+			"enabled": false
+		},
+		"input": {
+			"enabled": true
+		},
+		"result": {
+			"enabled": false
+		}
+	},
+	"useMultipleFiles": true
+}

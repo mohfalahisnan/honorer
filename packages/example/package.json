@@ -7,7 +7,9 @@
 		"dev": "tsx watch src/index.ts",
 		"build": "tsc",
 		"start": "tsx src/index.ts",
-		"test": "vitest"
+		"test": "vitest",
+		"db:generate": "prisma generate",
+		"db:push": "prisma db push"
 	},
 	"dependencies": {
 		"@hono/node-server": "^1.19.5",
@@ -20,9 +22,12 @@
 	"devDependencies": {
 		"@types/node": "^20.11.17",
 		"@types/pg": "^8.15.5",
+		"prisma": "^6.18.0",
 		"reflect-metadata": "^0.2.2",
 		"tsx": "^4.7.1",
 		"typescript": "^5.8.3",
-		"vitest": "^4.0.1"
+		"vitest": "^4.0.1",
+		"prisma-kysely": "^2.2.1",
+		"prisma-zod-generator": "^1.21.3"
 	}
 }
