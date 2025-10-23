@@ -4,7 +4,9 @@
   "type": "module",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
-  "publishConfig": { "access": "public" },
+  "publishConfig": {
+    "access": "public"
+  },
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
@@ -24,7 +26,8 @@
   "dependencies": {
     "@hono/node-server": "^1.19.5",
     "hono": "^4.10.2",
-    "kysely": "^0.28.8"
+    "kysely": "^0.28.8",
+    "reflect-metadata": "^0.2.2"
   },
   "devDependencies": {
     "@types/node": "^20.11.17",
