@@ -6,7 +6,11 @@ settings:
 
 importers:
 
-  .: {}
+  .:
+    devDependencies:
+      '@biomejs/biome':
+        specifier: ^2.2.7
+        version: 2.2.7
 
   apps/honorer-app:
     dependencies:
