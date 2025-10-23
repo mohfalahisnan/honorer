@@ -1,5 +1,5 @@
 import 'reflect-metadata'
-import { z, type ZodTypeAny } from 'zod'
+import type { z, ZodTypeAny } from 'zod'
 import type { Context } from 'hono'
 
 const META_PARAM_SCHEMA = 'route:paramSchema'

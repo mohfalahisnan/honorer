@@ -28,6 +28,7 @@
 		"typecheck": "tsc --noEmit",
 		"test": "vitest",
 		"lint": "biome check .",
+		"lint:fix": "biome lint . --write",
 		"format": "biome format . --write"
 	},
 	"dependencies": {

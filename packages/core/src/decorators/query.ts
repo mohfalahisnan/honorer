@@ -1,6 +1,6 @@
 import 'reflect-metadata'
-import { z, type ZodTypeAny } from 'zod'
 import type { Context } from 'hono'
+import type { ZodTypeAny, z } from 'zod'
 
 const META_QUERY_PARAM_SCHEMA = 'route:queryParamSchema'
 const CTX_QUERY_KEY = 'query'

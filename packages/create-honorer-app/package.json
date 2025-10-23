@@ -10,7 +10,10 @@
 		"build": "tsc",
 		"start": "node index.js",
 		"prepublishOnly": "pnpm run build",
-		"test": "vitest"
+		"test": "vitest",
+		"lint": "biome check .",
+		"lint:fix": "biome lint . --write",
+		"format": "biome format . --write"
 	},
 	"devDependencies": {
 		"@types/node": "^20.11.17",

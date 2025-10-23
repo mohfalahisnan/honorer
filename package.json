@@ -1,20 +1,22 @@
 {
-	"name": "honorer",
-	"version": "1.0.0",
-	"description": "",
-	"main": "index.js",
-	"scripts": {
-		"dev": "pnpm -r run dev",
-		"build": "pnpm -r run build",
-		"test": "pnpm -r run test",
-		"check": "biome check .",
-		"format": "biome format . --write"
-	},
-	"keywords": [],
-	"author": "",
-	"license": "ISC",
-	"packageManager": "pnpm@10.13.1",
-	"devDependencies": {
-		"@biomejs/biome": "^2.2.7"
-	}
+  "name": "honorer",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev": "pnpm -r run dev",
+    "build": "pnpm -r run build",
+    "test": "pnpm -r run test",
+    "check": "pnpm -r run check",
+    "lint": "pnpm -r run lint",
+    "lint:fix": "pnpm -r run lint:fix",
+    "format": "pnpm -r run format"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "packageManager": "pnpm@10.13.1",
+  "devDependencies": {
+    "@biomejs/biome": "^2.2.7"
+  }
 }
