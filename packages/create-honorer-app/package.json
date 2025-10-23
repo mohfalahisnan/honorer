@@ -10,11 +10,12 @@
     "build": "tsc",
     "start": "node index.js",
     "prepublishOnly": "pnpm run build",
-    "test": "node --test --import=tsx tests/scaffold.test.ts"
+    "test": "vitest"
   },
   "devDependencies": {
-    "typescript": "^5.9.3",
     "@types/node": "^20.11.17",
-    "tsx": "^4.20.6"
+    "tsx": "^4.20.6",
+    "typescript": "^5.9.3",
+    "vitest": "^4.0.1"
   }
 }
