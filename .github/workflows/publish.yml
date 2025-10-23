@@ -31,6 +31,17 @@ jobs:
       - name: Build all packages
         run: pnpm -r run build
 
+      - name: Verify npm authentication and org access
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        shell: bash
+        run: |
+          set -e
+          echo "Verifying npm auth and @honorer org access"
+          npm whoami
+          npm ping
+          npm org ls honorer >/dev/null 2>&1 || { echo "npm org '@honorer' not found or you lack access. Create the org or change package scope."; exit 1; }
+
       - name: Publish to npm
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
