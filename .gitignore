@@ -27,3 +27,9 @@ lerna-debug.log*
 
 # misc
 .DS_Store
+
+# build outputs
+/dist/
+/coverage/
+*.tgz
+*.tsbuildinfo

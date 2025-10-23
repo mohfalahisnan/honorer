@@ -3,6 +3,7 @@
   "type": "module",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
+  "publishConfig": { "access": "public" },
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
@@ -16,7 +17,8 @@
   "scripts": {
     "dev": "tsx watch src/serve.ts",
     "build": "tsc",
-    "start": "node dist/serve.js"
+    "start": "node dist/serve.js",
+    "prepublishOnly": "pnpm run build"
   },
   "dependencies": {
     "@hono/node-server": "^1.19.5",
