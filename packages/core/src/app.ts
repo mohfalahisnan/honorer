@@ -1,6 +1,6 @@
 import { Hono } from 'hono'
 import 'reflect-metadata'
-import { resolve } from './decorators/inject.js'
+import { resolve } from './decorators/inject'
 
 export type ControllerClass<T = any> = new (...args: any[]) => T
 export type RouteRecord = { method: string; path: string; handler?: Function; propertyKey?: string | symbol }

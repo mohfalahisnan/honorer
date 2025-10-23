@@ -1,6 +1,6 @@
 import { serve } from '@hono/node-server'
 import { createApp } from '@honorer/core'
-import { UsersController } from './module/users/users.controller.js'
+import { UsersController } from './module/users/users.controller'
 
 // Use the core app and extend it with additional routes
 const app = createApp([UsersController])
@@ -13,4 +13,4 @@ serve({
 }, (info) => {
   console.log(`Example server running on http://localhost:${info.port}`)
 })
-
+
