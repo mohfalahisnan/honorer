@@ -18,26 +18,12 @@ jobs:
         with:
           node-version: '20.x'
           registry-url: 'https://registry.npmjs.org'
-          cache: 'pnpm'
+          cache: 'npm'
 
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: 9
-          run_install: false
-          standalone: true
-
-      - name: Install pnpm (global)
-        run: npm install -g pnpm
-
-      - name: Verify pnpm (fallback via corepack if missing)
-        shell: bash
+      - name: Enable Corepack and activate pnpm
         run: |
-          if ! command -v pnpm >/dev/null 2>&1; then
-            echo "pnpm not found; enabling Corepack and activating pnpm@9"
-            corepack enable
-            corepack prepare pnpm@9 --activate
-          fi
+          corepack enable
+          corepack prepare pnpm@9 --activate
           pnpm -v
 
       - name: Install dependencies
@@ -52,3 +38,4 @@ jobs:
         run: |
           # Publish only non-private packages
           pnpm -r --filter '@honorer/*' publish --access public --no-git-checks
+
