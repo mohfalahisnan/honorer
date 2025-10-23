@@ -1,0 +1,20 @@
+{
+  "name": "honorer-app",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "tsx src/index.ts",
+    "build": "tsc"
+  },
+  "dependencies": {
+    "@hono/node-server": "^1.19.5",
+    "@honorer/core": "workspace:*",
+    "hono": "^4.6.10"
+  },
+  "devDependencies": {
+    "@types/node": "^20.19.23",
+    "tsx": "^4.7.1",
+    "typescript": "^5.8.3"
+  }
+}

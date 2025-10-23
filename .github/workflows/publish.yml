@@ -52,4 +52,5 @@ jobs:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: |
           pnpm -r --filter '@honorer/*' publish --access public --no-git-checks
+          pnpm -r --filter 'create-honorer-app' publish --access public --no-git-checks
 

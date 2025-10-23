@@ -8,6 +8,28 @@ importers:
 
   .: {}
 
+  apps/honorer-app:
+    dependencies:
+      '@hono/node-server':
+        specifier: ^1.19.5
+        version: 1.19.5(hono@4.10.2)
+      '@honorer/core':
+        specifier: workspace:*
+        version: link:../../packages/core
+      hono:
+        specifier: ^4.6.10
+        version: 4.10.2
+    devDependencies:
+      '@types/node':
+        specifier: ^20.19.23
+        version: 20.19.23
+      tsx:
+        specifier: ^4.7.1
+        version: 4.20.6
+      typescript:
+        specifier: ^5.8.3
+        version: 5.9.3
+
   packages/cli:
     dependencies:
       commander:
@@ -50,6 +72,18 @@ importers:
         version: 4.20.6
       typescript:
         specifier: ^5.8.3
+        version: 5.9.3
+
+  packages/create-honorer-app:
+    devDependencies:
+      '@types/node':
+        specifier: ^20.11.17
+        version: 20.19.23
+      tsx:
+        specifier: ^4.20.6
+        version: 4.20.6
+      typescript:
+        specifier: ^5.9.3
         version: 5.9.3
 
   packages/example:

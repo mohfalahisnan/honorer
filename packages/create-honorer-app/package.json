@@ -1,0 +1,20 @@
+{
+  "name": "create-honorer-app",
+  "version": "0.1.0",
+  "private": false,
+  "type": "module",
+  "bin": {
+    "create-honorer-app": "dist/index.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "start": "node index.js",
+    "prepublishOnly": "pnpm run build",
+    "test": "node --test --import=tsx tests/scaffold.test.ts"
+  },
+  "devDependencies": {
+    "typescript": "^5.9.3",
+    "@types/node": "^20.11.17",
+    "tsx": "^4.20.6"
+  }
+}
