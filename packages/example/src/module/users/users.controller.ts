@@ -1,20 +1,7 @@
 import { ApiResponse, Body, Controller, Get, Injectable, Params, Post, Query } from "@honorer/core";
-import { z } from "zod";
+import type { z } from "zod";
 import { db } from "../../utils/database";
-
-export const paramsSchema = z.object({
-	id: z.string(),
-});
-export const querySchema = z.object({
-	page: z.coerce.number().optional(),
-	limit: z.coerce.number().optional(),
-	orderBy: z.string().optional(),
-	orderDir: z.enum(["asc", "desc"]).optional(),
-});
-export const bodySchema = z.object({
-	email: z.string(),
-	password: z.string(),
-});
+import { bodySchema, paramsSchema, querySchema } from "./user.schema";
 
 @Injectable
 @Controller("/users")
