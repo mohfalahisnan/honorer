@@ -4,7 +4,7 @@
   "private": false,
   "type": "module",
   "bin": {
-    "create-honorer-app": "dist/index.js"
+    "create-honorer-app": "dist/src/index.js"
   },
   "scripts": {
     "build": "tsc",
