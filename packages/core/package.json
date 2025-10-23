@@ -1,54 +1,54 @@
 {
-	"name": "@honorer/core",
-	"version": "0.1.1",
-	"type": "module",
-	"main": "dist/index.js",
-	"types": "dist/index.d.ts",
-	"files": [
-		"dist",
-		"package.json",
-		"README.md"
-	],
-	"sideEffects": false,
-	"publishConfig": {
-		"access": "public"
-	},
-	"exports": {
-		".": {
-			"types": "./dist/index.d.ts",
-			"import": "./dist/index.js"
-		},
-		"./package.json": "./package.json"
-	},
-	"scripts": {
-		"dev": "tsx watch src/serve.ts",
-		"build": "tsc",
-		"start": "node dist/serve.js",
-		"prepublishOnly": "pnpm run build",
-		"typecheck": "tsc --noEmit",
-		"test": "vitest",
-		"lint": "biome check .",
-		"lint:fix": "biome lint . --write",
-		"format": "biome format . --write"
-	},
-	"dependencies": {
-		"reflect-metadata": "^0.2.2"
-	},
-	"devDependencies": {
-		"@biomejs/biome": "^2.2.7",
-		"@hono/node-server": "^1.19.5",
-		"@types/node": "^20.11.17",
-		"hono": "^4.10.2",
-		"kysely": "^0.28.8",
-		"tsx": "^4.7.1",
-		"typescript": "^5.8.3",
-		"vitest": "^4.0.1",
-		"zod": "^4.1.12"
-	},
-	"peerDependencies": {
-		"@hono/node-server": "^1.19.5",
-		"hono": "^4.10.2",
-		"kysely": "^0.28.8",
-		"zod": "^4.1.12"
-	}
+  "name": "@honorer/core",
+  "version": "0.1.2",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist",
+    "package.json",
+    "README.md"
+  ],
+  "sideEffects": false,
+  "publishConfig": {
+    "access": "public"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "scripts": {
+    "dev": "tsx watch src/serve.ts",
+    "build": "tsc",
+    "start": "node dist/serve.js",
+    "prepublishOnly": "pnpm run build",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest",
+    "lint": "biome check .",
+    "lint:fix": "biome lint . --write",
+    "format": "biome format . --write"
+  },
+  "dependencies": {
+    "reflect-metadata": "^0.2.2"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^2.2.7",
+    "@hono/node-server": "^1.19.5",
+    "@types/node": "^20.11.17",
+    "hono": "^4.10.2",
+    "kysely": "^0.28.8",
+    "tsx": "^4.7.1",
+    "typescript": "^5.8.3",
+    "vitest": "^4.0.1",
+    "zod": "^4.1.12"
+  },
+  "peerDependencies": {
+    "@hono/node-server": "^1.19.5",
+    "hono": "^4.10.2",
+    "kysely": "^0.28.8",
+    "zod": "^4.1.12"
+  }
 }
