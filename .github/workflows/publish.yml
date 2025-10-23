@@ -27,6 +27,9 @@ jobs:
           run_install: false
           standalone: true
 
+      - name: Install pnpm (global)
+        run: npm install -g pnpm
+
       - name: Verify pnpm (fallback via corepack if missing)
         shell: bash
         run: |
