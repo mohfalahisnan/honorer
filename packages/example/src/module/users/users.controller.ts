@@ -2,6 +2,8 @@ import { ApiResponse, Body, Controller, Get, Injectable, Params, Post, Query } f
 import type { z } from "zod";
 import { db } from "../../utils/database";
 import { bodySchema, paramsSchema, querySchema } from "./user.schema";
+import type { ExpressionBuilder } from "kysely";
+import type { DB } from "../../prisma/kysely/types";
 
 @Injectable
 @Controller("/users")
@@ -27,7 +29,7 @@ export class UsersController {
 
 		const countRow = await db
 			.selectFrom("User")
-			.select((eb) => eb.fn.countAll<number>().as("count"))
+			.select((eb: ExpressionBuilder<DB, "User">) => eb.fn.countAll<number>().as("count"))
 			.executeTakeFirst();
 
 		const total = Number((countRow as any)?.count ?? 0);

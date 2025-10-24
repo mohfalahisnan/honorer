@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import "reflect-metadata";
 import { createApp } from "@honorer/core";
 import { UsersController } from "../module/users/users.controller";
+import type { Context } from "hono";
 
 describe("Example app routes", () => {
 	it("returns typed params and query from UsersController", async () => {
@@ -14,7 +15,7 @@ describe("Example app routes", () => {
 
 	it("returns ok from /example route", async () => {
 		const app = createApp({ controllers: [UsersController] });
-		app.get("/example", (c) => c.json({ ok: true, message: "Using @honorer/core" }));
+		app.get("/example", (c: Context) => c.json({ ok: true, message: "Using @honorer/core" }));
 		const res = await app.request("/example");
 		expect(res.status).toBe(200);
 		const json = await res.json();
