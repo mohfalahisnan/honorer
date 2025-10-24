@@ -32,8 +32,18 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Build all packages
-        run: pnpm -r run build
+      - name: Build @honorer/core first
+        run: pnpm -r --filter ./packages/core run build
+
+      - name: Verify @honorer/core type declarations
+        shell: bash
+        run: |
+          set -e
+          ls -la packages/core/dist || true
+          test -f packages/core/dist/index.d.ts && echo "Core types found" || (echo "Core types missing"; exit 1)
+
+      - name: Build all packages (exclude apps)
+        run: pnpm -r --filter ./packages/** --filter '!./packages/core' run build
 
       - name: Verify npm authentication and org access
         env:

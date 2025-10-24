@@ -44,5 +44,9 @@ Then:
 - Windows path issues:
   - Prefer `pnpm dlx` or the built JS command if you hit path resolution problems.
 
+## Learn More
+- Core library docs: see `packages/core/README.md` in this repo or the `@honorer/core` package README when installed.
+- Example app: `apps/example` demonstrates controllers, decorators, validation, DI, and response helpers.
+
 ## License
 - Part of the Honorer project. See the repository for overall licensing and contribution guidelines.

@@ -12,6 +12,55 @@ importers:
         specifier: ^2.2.7
         version: 2.2.7
 
+  apps/example:
+    dependencies:
+      '@hono/node-server':
+        specifier: ^1.19.5
+        version: 1.19.5(hono@4.10.2)
+      '@honorer/core':
+        specifier: workspace:*
+        version: link:../../packages/core
+      hono:
+        specifier: ^4.10.2
+        version: 4.10.2
+      kysely:
+        specifier: ^0.28.8
+        version: 0.28.8
+      pg:
+        specifier: ^8.16.3
+        version: 8.16.3
+      zod:
+        specifier: ^4.1.12
+        version: 4.1.12
+    devDependencies:
+      '@types/node':
+        specifier: ^20.11.17
+        version: 20.19.23
+      '@types/pg':
+        specifier: ^8.15.5
+        version: 8.15.5
+      prisma:
+        specifier: ^6.18.0
+        version: 6.18.0(typescript@5.9.3)
+      prisma-kysely:
+        specifier: ^2.2.1
+        version: 2.2.1(prisma@6.18.0(typescript@5.9.3))
+      prisma-zod-generator:
+        specifier: ^1.21.3
+        version: 1.29.2(prisma@6.18.0(typescript@5.9.3))(typescript@5.9.3)(zod@4.1.12)
+      reflect-metadata:
+        specifier: ^0.2.2
+        version: 0.2.2
+      tsx:
+        specifier: ^4.7.1
+        version: 4.20.6
+      typescript:
+        specifier: ^5.8.3
+        version: 5.9.3
+      vitest:
+        specifier: ^4.0.1
+        version: 4.0.1(@types/node@20.19.23)(jiti@2.6.1)(tsx@4.20.6)
+
   apps/honorer-app:
     dependencies:
       '@hono/node-server':
@@ -97,55 +146,6 @@ importers:
         version: 4.20.6
       typescript:
         specifier: ^5.9.3
-        version: 5.9.3
-      vitest:
-        specifier: ^4.0.1
-        version: 4.0.1(@types/node@20.19.23)(jiti@2.6.1)(tsx@4.20.6)
-
-  packages/example:
-    dependencies:
-      '@hono/node-server':
-        specifier: ^1.19.5
-        version: 1.19.5(hono@4.10.2)
-      '@honorer/core':
-        specifier: workspace:*
-        version: link:../core
-      hono:
-        specifier: ^4.10.2
-        version: 4.10.2
-      kysely:
-        specifier: ^0.28.8
-        version: 0.28.8
-      pg:
-        specifier: ^8.16.3
-        version: 8.16.3
-      zod:
-        specifier: ^4.1.12
-        version: 4.1.12
-    devDependencies:
-      '@types/node':
-        specifier: ^20.11.17
-        version: 20.19.23
-      '@types/pg':
-        specifier: ^8.15.5
-        version: 8.15.5
-      prisma:
-        specifier: ^6.18.0
-        version: 6.18.0(typescript@5.9.3)
-      prisma-kysely:
-        specifier: ^2.2.1
-        version: 2.2.1(prisma@6.18.0(typescript@5.9.3))
-      prisma-zod-generator:
-        specifier: ^1.21.3
-        version: 1.29.2(prisma@6.18.0(typescript@5.9.3))(typescript@5.9.3)(zod@4.1.12)
-      reflect-metadata:
-        specifier: ^0.2.2
-        version: 0.2.2
-      tsx:
-        specifier: ^4.7.1
-        version: 4.20.6
-      typescript:
-        specifier: ^5.8.3
         version: 5.9.3
       vitest:
         specifier: ^4.0.1

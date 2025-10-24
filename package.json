@@ -1,7 +1,16 @@
 {
   "name": "honorer",
   "version": "1.0.0",
-  "description": "",
+  "private": true,
+  "description": "Honorer monorepo containing core library, CLI, and app templates.",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mohfalahisnan/honorer.git"
+  },
+  "homepage": "https://github.com/mohfalahisnan/honorer#readme",
+  "bugs": {
+    "url": "https://github.com/mohfalahisnan/honorer/issues"
+  },
   "main": "index.js",
   "scripts": {
     "dev": "pnpm -r run dev",
@@ -12,9 +21,19 @@
     "lint:fix": "pnpm -r run lint:fix",
     "format": "pnpm -r run format"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "keywords": [
+    "honorer",
+    "hono",
+    "kysely",
+    "zod",
+    "cli",
+    "monorepo"
+  ],
+  "author": "mohfalahisnan",
+  "license": "MIT",
+  "engines": {
+    "node": ">=18.0.0"
+  },
   "packageManager": "pnpm@10.13.1",
   "devDependencies": {
     "@biomejs/biome": "^2.2.7"
