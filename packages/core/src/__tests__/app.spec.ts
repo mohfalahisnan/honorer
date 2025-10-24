@@ -35,7 +35,7 @@ class TestController {
 
 describe("createApp + Params/Query decorators", () => {
 	it("injects parsed params and query into handler arguments", async () => {
-		const app = createApp({ controllers: [TestController] });
+		const app = createApp({ options: { formatResponse: false }, controllers: [TestController] });
 		const res = await app.request("/t/abc?page=2");
 		expect(res.status).toBe(200);
 		const body = await res.json();
@@ -43,7 +43,7 @@ describe("createApp + Params/Query decorators", () => {
 	});
 
 	it("paramsOf/queryOf helpers parse values from context", async () => {
-		const app = createApp({ controllers: [TestController] });
+		const app = createApp({ options: { formatResponse: false }, controllers: [TestController] });
 		const res = await app.request("/t/helper/xyz?page=5");
 		expect(res.status).toBe(200);
 		const body = await res.json();

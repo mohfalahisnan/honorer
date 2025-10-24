@@ -152,7 +152,7 @@ function registerControllers(app: Hono, { options = { formatResponse: true }, co
 					}
 					if (result instanceof Response) return result;
 					if (result instanceof ApiResponse) return result.toResponse(c);
-					return c.json(result);
+					return c.json(result ?? null);
 				});
 			} else {
 				(app as any)[r.method](fullPath, async (c: any) => {
@@ -162,7 +162,7 @@ function registerControllers(app: Hono, { options = { formatResponse: true }, co
 					}
 					if (result instanceof Response) return result;
 					if (result instanceof ApiResponse) return result.toResponse(c);
-					return c.json(result);
+					return c.json(result ?? null);
 				});
 			}
 		}
