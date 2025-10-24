@@ -1,7 +1,7 @@
-import { serve } from '@hono/node-server'
-import { createApp } from '.'
+import { serve } from "@hono/node-server";
+import { createApp } from ".";
 
-const app = createApp()
+const app = createApp();
 
 serve(
 	{
@@ -9,6 +9,6 @@ serve(
 		port: 3000,
 	},
 	(info) => {
-		console.log(`Server is running on http://localhost:${info.port}`)
+		console.log(`Server is running on http://localhost:${info.port}`);
 	},
-)
+);

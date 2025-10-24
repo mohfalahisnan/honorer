@@ -6,9 +6,9 @@ import { bodySchema, paramsSchema, querySchema } from "./user.schema";
 @Injectable
 @Controller("/users")
 export class UsersController {
-	private model = db.createCrudController("User");
+	private readonly model = db.createCrudController("User");
 
-	@Get("/")
+	@Get()
 	async listAll(@Query(querySchema) q: z.infer<typeof querySchema>) {
 		const pageNum = Math.max(1, q.page ?? 1);
 		const limitNum = Math.max(1, Math.min(100, q.limit ?? 10));

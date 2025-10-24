@@ -1,10 +1,10 @@
-import { Controller, Get, Injectable } from "@honorer/core";
+import { Controller, Get, Injectable } from '@honorer/core'
 
 @Injectable
-@Controller("/users")
+@Controller('/users')
 export class UsersController {
-	@Get("/")
+	@Get()
 	async list() {
-		return { users: [{ id: 1, name: "Alice" }] };
+		return { users: [{ id: 1, name: 'Alice' }] }
 	}
 }

@@ -1,4 +1,5 @@
 {
+	"extends": "../../tsconfig.base.json",
 	"compilerOptions": {
 		"target": "ESNext",
 		"module": "ESNext",
@@ -13,5 +14,6 @@
 		"rootDir": "./src",
 		"outDir": "./dist"
 	},
-	"exclude": ["node_modules", "dist", "vitest.config.ts","prisma.config.ts"]
+	"exclude": ["node_modules", "dist", "vitest.config.ts","prisma.config.ts"],
+	"references": [{ "path": "../core" }],
 }

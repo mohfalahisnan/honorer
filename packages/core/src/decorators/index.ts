@@ -1,20 +1,20 @@
-export { Controller, Delete, Get, Post, Put } from './controller'
+export type { BodySchemaBinding } from "./body";
+export { Body, bodyOf, getBodySchemaBindings } from "./body";
+export { Controller, Delete, Get, Post, Put } from "./controller";
 export {
-	resolve as diResolve,
 	Inject,
 	Injectable,
 	override,
 	resetContainer,
-} from './inject'
+	resolve as diResolve,
+} from "./inject";
+export type { ParamSchemaBinding, ParamsContext } from "./params";
 export {
-	Params,
-	paramsOf,
 	bindRoute,
 	getParamSchema,
 	getParamSchemaBindings,
-} from './params'
-export type { ParamsContext, ParamSchemaBinding } from './params'
-export { Query, getQuerySchemaBindings, queryOf } from './query'
-export type { QuerySchemaBinding } from './query'
-export { Body, getBodySchemaBindings, bodyOf } from './body'
-export type { BodySchemaBinding } from './body'
+	Params,
+	paramsOf,
+} from "./params";
+export type { QuerySchemaBinding } from "./query";
+export { getQuerySchemaBindings, Query, queryOf } from "./query";

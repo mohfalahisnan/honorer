@@ -1,15 +1,25 @@
 import { serve } from "@hono/node-server";
 import { createApp } from "@honorer/core";
+import { Hono } from "hono";
 import { UsersController } from "./module/users/users.controller";
 
-// Use the core app and extend it with additional routes
-const app = createApp([UsersController]);
+const rootApp = new Hono();
 
-app.get("/example", (c) => c.json({ ok: true, message: "Using @honorer/core" }));
+// Use the core app and extend it with additional routes
+const app = createApp({
+	controllers: [UsersController],
+});
+
+const tenant = createApp({
+	controllers: [UsersController],
+});
+
+rootApp.route("/api", app);
+rootApp.route("/tenant", tenant);
 
 serve(
 	{
-		fetch: app.fetch,
+		fetch: rootApp.fetch,
 		port: 3001,
 	},
 	(info) => {

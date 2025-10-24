@@ -1,4 +1,4 @@
-import 'reflect-metadata'
+import "reflect-metadata";
 
 /**
  * Class decorator to assign a base path prefix for a controller.
@@ -6,10 +6,10 @@ import 'reflect-metadata'
  *
  * @param prefix Base URL path for the controller (e.g. "/users").
  */
-export function Controller(prefix = ''): ClassDecorator {
+export function Controller(prefix = ""): ClassDecorator {
 	return (target) => {
-		Reflect.defineMetadata('prefix', prefix, target)
-	}
+		Reflect.defineMetadata("prefix", prefix, target);
+	};
 }
 
 /**
@@ -18,17 +18,17 @@ export function Controller(prefix = ''): ClassDecorator {
  *
  * @param path Route path (e.g. "/:id" or "/").
  */
-export function Get(path: string): MethodDecorator {
+export function Get(path: string = "/"): MethodDecorator {
 	return (target, propertyKey, descriptor) => {
-		const routes = Reflect.getMetadata('routes', target.constructor) || []
+		const routes = Reflect.getMetadata("routes", target.constructor) || [];
 		routes.push({
-			method: 'get',
+			method: "get",
 			path,
 			handler: descriptor.value,
 			propertyKey,
-		})
-		Reflect.defineMetadata('routes', routes, target.constructor)
-	}
+		});
+		Reflect.defineMetadata("routes", routes, target.constructor);
+	};
 }
 
 /**
@@ -37,17 +37,17 @@ export function Get(path: string): MethodDecorator {
  *
  * @param path Route path (e.g. "/").
  */
-export function Post(path: string): MethodDecorator {
+export function Post(path: string = "/"): MethodDecorator {
 	return (target, propertyKey, descriptor) => {
-		const routes = Reflect.getMetadata('routes', target.constructor) || []
+		const routes = Reflect.getMetadata("routes", target.constructor) || [];
 		routes.push({
-			method: 'post',
+			method: "post",
 			path,
 			handler: descriptor.value,
 			propertyKey,
-		})
-		Reflect.defineMetadata('routes', routes, target.constructor)
-	}
+		});
+		Reflect.defineMetadata("routes", routes, target.constructor);
+	};
 }
 
 /**
@@ -56,17 +56,17 @@ export function Post(path: string): MethodDecorator {
  *
  * @param path Route path (e.g. "/:id").
  */
-export function Put(path: string): MethodDecorator {
+export function Put(path: string = "/"): MethodDecorator {
 	return (target, propertyKey, descriptor) => {
-		const routes = Reflect.getMetadata('routes', target.constructor) || []
+		const routes = Reflect.getMetadata("routes", target.constructor) || [];
 		routes.push({
-			method: 'put',
+			method: "put",
 			path,
 			handler: descriptor.value,
 			propertyKey,
-		})
-		Reflect.defineMetadata('routes', routes, target.constructor)
-	}
+		});
+		Reflect.defineMetadata("routes", routes, target.constructor);
+	};
 }
 
 /**
@@ -75,15 +75,15 @@ export function Put(path: string): MethodDecorator {
  *
  * @param path Route path (e.g. "/:id").
  */
-export function Delete(path: string): MethodDecorator {
+export function Delete(path: string = "/"): MethodDecorator {
 	return (target, propertyKey, descriptor) => {
-		const routes = Reflect.getMetadata('routes', target.constructor) || []
+		const routes = Reflect.getMetadata("routes", target.constructor) || [];
 		routes.push({
-			method: 'delete',
+			method: "delete",
 			path,
 			handler: descriptor.value,
 			propertyKey,
-		})
-		Reflect.defineMetadata('routes', routes, target.constructor)
-	}
+		});
+		Reflect.defineMetadata("routes", routes, target.constructor);
+	};
 }

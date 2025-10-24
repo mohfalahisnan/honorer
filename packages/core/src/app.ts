@@ -22,7 +22,14 @@ function normalizeRoutePath(prefix: string, path: string): string {
 	return combined;
 }
 
-export function createApp(controllers: ControllerClass[] = []) {
+export type CreateAppConfig = {
+	options?: {
+		formatResponse?: boolean;
+	};
+	controllers?: ControllerClass[];
+};
+
+export function createApp({ options = { formatResponse: true }, controllers = [] }: CreateAppConfig = {}) {
 	const app = new Hono();
 
 	app.onError((err, c) => {
@@ -54,13 +61,15 @@ export function createApp(controllers: ControllerClass[] = []) {
 	});
 
 	if (controllers.length) {
-		registerControllers(app, controllers);
+		// Use the full config so registerControllers can read options.formatResponse
+		registerControllers(app, { options, controllers });
 	}
 
 	return app;
 }
 
-function registerControllers(app: Hono, controllers: ControllerClass[]) {
+function registerControllers(app: Hono, { options = { formatResponse: true }, controllers = [] }: CreateAppConfig) {
+	const { formatResponse } = options;
 	for (const Controller of controllers) {
 		const prefix: string = Reflect.getMetadata("prefix", Controller) || "";
 		const routes: RouteRecord[] = Reflect.getMetadata("routes", Controller) || [];
@@ -137,12 +146,23 @@ function registerControllers(app: Hono, controllers: ControllerClass[]) {
 						args.push(undefined);
 					}
 
-					return await formatReturn(c, await boundHandler(...args, c));
+					const result = await boundHandler(...args, c);
+					if (formatResponse) {
+						return await formatReturn(c, result);
+					}
+					if (result instanceof Response) return result;
+					if (result instanceof ApiResponse) return result.toResponse(c);
+					return c.json(result);
 				});
 			} else {
 				(app as any)[r.method](fullPath, async (c: any) => {
 					const result = await boundHandler(c);
-					return await formatReturn(c, result);
+					if (formatResponse) {
+						return await formatReturn(c, result);
+					}
+					if (result instanceof Response) return result;
+					if (result instanceof ApiResponse) return result.toResponse(c);
+					return c.json(result);
 				});
 			}
 		}
