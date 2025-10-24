@@ -138,6 +138,9 @@ importers:
 
   packages/create-honorer-app:
     devDependencies:
+      '@biomejs/biome':
+        specifier: ^2.2.7
+        version: 2.2.7
       '@types/node':
         specifier: ^20.11.17
         version: 20.19.23
