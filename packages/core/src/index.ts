@@ -25,5 +25,6 @@ export {
 export type { BodySchemaBinding } from "./decorators/body";
 export type { ParamsContext } from "./decorators/params";
 export type { QuerySchemaBinding } from "./decorators/query";
+export * from "./types";
 export type { PaginationInfo, ResponseEnvelope } from "./utils";
 export { ApiResponse, Database, formatReturn } from "./utils";
