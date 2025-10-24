@@ -9,7 +9,7 @@
 	},
 	"dependencies": {
 		"@hono/node-server": "^1.19.5",
-		"@honorer/core": "workspace:*",
+		"@honorer/core": "0.1.4",
 		"hono": "^4.6.10"
 	},
 	"devDependencies": {

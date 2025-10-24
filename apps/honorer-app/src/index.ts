@@ -1,6 +1,6 @@
 import { serve } from '@hono/node-server'
 import { createApp } from '@honorer/core'
-import { UsersController } from './controllers/users.controller'
+import { UsersController } from '@/controllers/users.controller'
 
 const app = createApp({ controllers: [UsersController] })
 

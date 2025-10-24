@@ -18,8 +18,8 @@ importers:
         specifier: ^1.19.5
         version: 1.19.5(hono@4.10.2)
       '@honorer/core':
-        specifier: workspace:*
-        version: link:../../packages/core
+        specifier: 0.1.4
+        version: 0.1.4(@hono/node-server@1.19.5(hono@4.10.2))(hono@4.10.2)(kysely@0.28.8)(zod@4.1.12)
       hono:
         specifier: ^4.6.10
         version: 4.10.2
@@ -376,6 +376,14 @@ packages:
     engines: {node: '>=18.14.1'}
     peerDependencies:
       hono: ^4
+
+  '@honorer/core@0.1.4':
+    resolution: {integrity: sha512-3W3yD1/+bYE1FJ4vT524OKKyjRQ2yEqFXc++XFG3a5U2mNcPnVJ+OBefYsct+J4Pr6Req6paKT1gdr1SkJ57yg==}
+    peerDependencies:
+      '@hono/node-server': ^1.19.5
+      hono: ^4.10.2
+      kysely: ^0.28.8
+      zod: ^4.1.12
 
   '@jridgewell/sourcemap-codec@1.5.5':
     resolution: {integrity: sha512-cYQ9310grqxueWbl+WuIUIaiUaDcj7WOq5fVhEljNVgRfOUhY9fy2zTvfoqWsnebh8Sl70VScFbICvJnLKB0Og==}
@@ -1243,6 +1251,14 @@ snapshots:
   '@hono/node-server@1.19.5(hono@4.10.2)':
     dependencies:
       hono: 4.10.2
+
+  '@honorer/core@0.1.4(@hono/node-server@1.19.5(hono@4.10.2))(hono@4.10.2)(kysely@0.28.8)(zod@4.1.12)':
+    dependencies:
+      '@hono/node-server': 1.19.5(hono@4.10.2)
+      hono: 4.10.2
+      kysely: 0.28.8
+      reflect-metadata: 0.2.2
+      zod: 4.1.12
 
   '@jridgewell/sourcemap-codec@1.5.5': {}
 
