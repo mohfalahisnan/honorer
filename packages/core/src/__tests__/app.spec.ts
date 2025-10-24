@@ -49,4 +49,53 @@ describe("createApp + Params/Query decorators", () => {
 		const body = await res.json();
 		expect(body).toEqual({ id: "xyz", page: 5 });
 	});
+
+	// Additional edge cases
+
+	it("handles missing query param gracefully (page -> null)", async () => {
+		const app = createApp({ options: { formatResponse: false }, controllers: [TestController] });
+		const res = await app.request("/t/abc");
+		expect(res.status).toBe(200);
+		const body = await res.json();
+		expect(body).toEqual({ id: "abc", page: null });
+	});
+
+	it("coerces numeric-like query strings (page=0)", async () => {
+		const app = createApp({ options: { formatResponse: false }, controllers: [TestController] });
+		// z.coerce.number() with empty string becomes 0; explicit '0' should be 0
+		const res = await app.request("/t/abc?page=0");
+		expect(res.status).toBe(200);
+		const body = await res.json();
+		expect(body).toEqual({ id: "abc", page: 0 });
+	});
+
+	it("ignores extra query keys not defined in schema", async () => {
+		const app = createApp({ options: { formatResponse: false }, controllers: [TestController] });
+		const res = await app.request("/t/abc?page=3&extra=foo");
+		expect(res.status).toBe(200);
+		const body = await res.json();
+		expect(body).toEqual({ id: "abc", page: 3 });
+	});
+
+	it("returns 400 envelope for invalid query type (page=NaN)", async () => {
+		const app = createApp({ controllers: [TestController] }); // default formatResponse=true to assert envelope
+		const res = await app.request("/t/abc?page=NaN");
+		expect(res.status).toBe(400);
+		const body = await res.json();
+		expect(body.success).toBe(false);
+		expect(body.code).toBe("VALIDATION_ERROR");
+		expect(body.message).toBe("Request validation failed");
+		expect(Array.isArray(body.meta?.issues)).toBe(true);
+	});
+
+	it("returns 400 envelope for invalid query type in helper route (page=foo)", async () => {
+		const app = createApp({ controllers: [TestController] }); // default formatResponse=true
+		const res = await app.request("/t/helper/abc?page=foo");
+		expect(res.status).toBe(400);
+		const body = await res.json();
+		expect(body.success).toBe(false);
+		expect(body.code).toBe("VALIDATION_ERROR");
+		expect(body.message).toBe("Request validation failed");
+		expect(Array.isArray(body.meta?.issues)).toBe(true);
+	});
 });
