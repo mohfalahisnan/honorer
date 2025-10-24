@@ -15,6 +15,5 @@
 		"outDir": "./dist",
 		"paths": {}
 	},
-	"exclude": ["node_modules", "dist", "vitest.config.ts","prisma.config.ts"],
-	"references": [{ "path": "../core" }],
+	"exclude": ["node_modules", "dist", "vitest.config.ts","prisma.config.ts"]
 }
