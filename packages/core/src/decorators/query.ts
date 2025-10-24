@@ -1,17 +1,17 @@
-import "reflect-metadata";
-import type { Context } from "hono";
-import type { ZodTypeAny, z } from "zod";
+import 'reflect-metadata'
+import type { Context } from 'hono'
+import type { ZodTypeAny, z } from 'zod'
 
-const META_QUERY_PARAM_SCHEMA = "route:queryParamSchema";
-const CTX_QUERY_KEY = "query";
+const META_QUERY_PARAM_SCHEMA = 'route:queryParamSchema'
+const CTX_QUERY_KEY = 'query'
 
 /**
  * Binding describing the method parameter index and its Zod schema for query parsing.
  */
 export type QuerySchemaBinding<T extends ZodTypeAny> = {
-	index: number;
-	schema: T;
-};
+	index: number
+	schema: T
+}
 
 /**
  * Parameter decorator that attaches a Zod schema for query-string parsing.
@@ -45,10 +45,10 @@ export type QuerySchemaBinding<T extends ZodTypeAny> = {
 export function Query<T extends ZodTypeAny>(schema: T): ParameterDecorator {
 	return (target, propertyKey, parameterIndex) => {
 		const list: QuerySchemaBinding<ZodTypeAny>[] =
-			Reflect.getMetadata(META_QUERY_PARAM_SCHEMA, target, propertyKey!) || [];
-		list.push({ index: parameterIndex!, schema });
-		Reflect.defineMetadata(META_QUERY_PARAM_SCHEMA, list, target, propertyKey!);
-	};
+			Reflect.getMetadata(META_QUERY_PARAM_SCHEMA, target, propertyKey!) || []
+		list.push({ index: parameterIndex!, schema })
+		Reflect.defineMetadata(META_QUERY_PARAM_SCHEMA, list, target, propertyKey!)
+	}
 }
 
 /**
@@ -58,7 +58,7 @@ export function Query<T extends ZodTypeAny>(schema: T): ParameterDecorator {
  * @param key The method name/symbol.
  */
 export function getQuerySchemaBindings(target: object, key: string | symbol): QuerySchemaBinding<ZodTypeAny>[] {
-	return (Reflect.getMetadata(META_QUERY_PARAM_SCHEMA, target, key) || []) as QuerySchemaBinding<ZodTypeAny>[];
+	return (Reflect.getMetadata(META_QUERY_PARAM_SCHEMA, target, key) || []) as QuerySchemaBinding<ZodTypeAny>[]
 }
 
 /**
@@ -70,10 +70,10 @@ export function getQuerySchemaBindings(target: object, key: string | symbol): Qu
  * @returns Parsed query object.
  */
 export function queryOf<T extends ZodTypeAny>(c: Context, schema: T): z.infer<T> {
-	const existing = (c as any).get?.(CTX_QUERY_KEY);
-	if (existing) return existing as z.infer<T>;
-	const raw = c.req.query();
-	const parsed = schema.parse(raw);
-	(c as any).set?.(CTX_QUERY_KEY, parsed);
-	return parsed;
+	const existing = (c as any).get?.(CTX_QUERY_KEY)
+	if (existing) return existing as z.infer<T>
+	const raw = c.req.query()
+	const parsed = schema.parse(raw)
+	;(c as any).set?.(CTX_QUERY_KEY, parsed)
+	return parsed
 }

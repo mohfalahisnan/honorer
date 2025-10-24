@@ -1,17 +1,17 @@
-import "reflect-metadata";
-import type { Context } from "hono";
-import type { ZodTypeAny, z } from "zod";
+import 'reflect-metadata'
+import type { Context } from 'hono'
+import type { ZodTypeAny, z } from 'zod'
 
-const META_BODY_SCHEMA = "route:bodySchema";
-const CTX_BODY_KEY = "body";
+const META_BODY_SCHEMA = 'route:bodySchema'
+const CTX_BODY_KEY = 'body'
 
 /**
  * Binding describing the method parameter index and its associated Zod schema for body parsing.
  */
 export type BodySchemaBinding<T extends ZodTypeAny> = {
-	index: number;
-	schema: T;
-};
+	index: number
+	schema: T
+}
 
 /**
  * Parameter decorator that attaches a Zod schema for request body parsing.
@@ -39,10 +39,10 @@ export type BodySchemaBinding<T extends ZodTypeAny> = {
  */
 export function Body<T extends ZodTypeAny>(schema: T): ParameterDecorator {
 	return (target, propertyKey, parameterIndex) => {
-		const list: BodySchemaBinding<ZodTypeAny>[] = Reflect.getMetadata(META_BODY_SCHEMA, target, propertyKey!) || [];
-		list.push({ index: parameterIndex!, schema });
-		Reflect.defineMetadata(META_BODY_SCHEMA, list, target, propertyKey!);
-	};
+		const list: BodySchemaBinding<ZodTypeAny>[] = Reflect.getMetadata(META_BODY_SCHEMA, target, propertyKey!) || []
+		list.push({ index: parameterIndex!, schema })
+		Reflect.defineMetadata(META_BODY_SCHEMA, list, target, propertyKey!)
+	}
 }
 
 /**
@@ -52,7 +52,7 @@ export function Body<T extends ZodTypeAny>(schema: T): ParameterDecorator {
  * @param key The method name/symbol.
  */
 export function getBodySchemaBindings(target: object, key: string | symbol): BodySchemaBinding<ZodTypeAny>[] {
-	return (Reflect.getMetadata(META_BODY_SCHEMA, target, key) || []) as BodySchemaBinding<ZodTypeAny>[];
+	return (Reflect.getMetadata(META_BODY_SCHEMA, target, key) || []) as BodySchemaBinding<ZodTypeAny>[]
 }
 
 /**
@@ -64,11 +64,11 @@ export function getBodySchemaBindings(target: object, key: string | symbol): Bod
  * @returns Parsed body according to `schema`.
  */
 export function bodyOf<T extends ZodTypeAny>(c: Context, schema: T): Promise<z.infer<T>> {
-	const existing = (c as any).get?.(CTX_BODY_KEY);
-	if (existing) return Promise.resolve(existing as z.infer<T>);
+	const existing = (c as any).get?.(CTX_BODY_KEY)
+	if (existing) return Promise.resolve(existing as z.infer<T>)
 	return c.req.json().then((raw: any) => {
-		const parsed = schema.parse(raw);
-		(c as any).set?.(CTX_BODY_KEY, parsed);
-		return parsed as z.infer<T>;
-	});
+		const parsed = schema.parse(raw)
+		;(c as any).set?.(CTX_BODY_KEY, parsed)
+		return parsed as z.infer<T>
+	})
 }
