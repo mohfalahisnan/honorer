@@ -1,5 +1,4 @@
 {
-	"extends": "../../tsconfig.base.json",
 	"compilerOptions": {
 		"target": "ESNext",
 		"module": "ESNext",
@@ -9,11 +8,17 @@
 		"skipLibCheck": true,
 		"experimentalDecorators": true,
 		"emitDecoratorMetadata": true,
-		"useDefineForClassFields": false,
 		"types": ["node"],
+		"jsx": "react-jsx",
+		"jsxImportSource": "hono/jsx",
 		"rootDir": "./src",
 		"outDir": "./dist",
-		"paths": {}
+		"declaration": true,
+		"declarationDir": "./dist",
+		"baseUrl": ".",
+		"paths": {
+			"@/*": ["./src/*"]
+		}
 	},
-	"exclude": ["node_modules", "dist", "vitest.config.ts","prisma.config.ts"]
+	"exclude": ["node_modules", "dist","vitest.config.ts","prisma.config.ts"]
 }

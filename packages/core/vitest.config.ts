@@ -1,14 +1,14 @@
-import { defineConfig } from 'vitest/config'
-import path from 'node:path'
+import { defineConfig } from "vitest/config"
+import path from "node:path"
 
 export default defineConfig({
 	resolve: {
 		alias: {
-			'@honorer/core': path.resolve(__dirname, 'src'),
+			"@honorer/core": path.resolve(__dirname, "src"),
 		},
 	},
 	test: {
-		environment: 'node',
-		exclude: ['dist/**', '**/node_modules/**'],
+		environment: "node",
+		exclude: ["dist/**", "**/node_modules/**"],
 	},
 })

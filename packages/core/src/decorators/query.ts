@@ -1,9 +1,9 @@
-import 'reflect-metadata'
-import type { Context } from 'hono'
-import type { ZodTypeAny, z } from 'zod'
+import "reflect-metadata"
+import type { Context } from "hono"
+import type { ZodTypeAny, z } from "zod"
 
-const META_QUERY_PARAM_SCHEMA = 'route:queryParamSchema'
-const CTX_QUERY_KEY = 'query'
+const META_QUERY_PARAM_SCHEMA = "route:queryParamSchema"
+const CTX_QUERY_KEY = "query"
 
 /**
  * Binding describing the method parameter index and its Zod schema for query parsing.

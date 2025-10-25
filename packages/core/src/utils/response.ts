@@ -1,4 +1,4 @@
-import type { Context } from 'hono'
+import type { Context } from "hono"
 
 export type PaginationInfo = {
 	page: number
@@ -90,19 +90,19 @@ export class ApiResponse<T = any> {
 }
 
 function isResponseEnvelope(obj: any): obj is ResponseEnvelope<any> {
-	if (!obj || typeof obj !== 'object') return false
-	if (typeof obj.status !== 'number') return false
-	if (typeof obj.success !== 'boolean') return false
+	if (!obj || typeof obj !== "object") return false
+	if (typeof obj.status !== "number") return false
+	if (typeof obj.success !== "boolean") return false
 	// data may be null; check presence rather than type strictness
-	if (!Object.hasOwn(obj, 'data')) return false
+	if (!Object.hasOwn(obj, "data")) return false
 	return true
 }
 
 export async function formatReturn(c: Context, result: any): Promise<Response> {
 	// If a Response was manually created, try to normalize JSON bodies
 	if (result instanceof Response) {
-		const ct = result.headers?.get('content-type') || ''
-		if (ct.includes('application/json')) {
+		const ct = result.headers?.get("content-type") || ""
+		if (ct.includes("application/json")) {
 			try {
 				const payload = await result.clone().json()
 				if (isResponseEnvelope(payload)) {
@@ -111,7 +111,7 @@ export async function formatReturn(c: Context, result: any): Promise<Response> {
 				if (result.ok) {
 					return ApiResponse.success(payload ?? null, { status: result.status }).toResponse(c)
 				}
-				const message = typeof payload === 'string' ? payload : (payload?.message ?? 'Error')
+				const message = typeof payload === "string" ? payload : (payload?.message ?? "Error")
 				return ApiResponse.error(message, { status: result.status, data: payload ?? null }).toResponse(c)
 			} catch {
 				// not JSON or failed to parse; pass through

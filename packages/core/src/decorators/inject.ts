@@ -1,4 +1,4 @@
-import 'reflect-metadata'
+import "reflect-metadata"
 
 const container = new Map<any, any>()
 
@@ -23,10 +23,10 @@ export const Injectable: ClassDecorator = (target: any) => {
  */
 export const Inject = <T>(token: new (...args: any[]) => T): ParameterDecorator => {
 	return (target: Object, _key: string | symbol | undefined, index: number) => {
-		const existing = Reflect.getMetadata('inject:params', target) || []
+		const existing = Reflect.getMetadata("inject:params", target) || []
 		existing.push({ index, token })
 
-		Reflect.defineMetadata('inject:params', existing, target)
+		Reflect.defineMetadata("inject:params", existing, target)
 	}
 }
 
@@ -43,8 +43,8 @@ export const Inject = <T>(token: new (...args: any[]) => T): ParameterDecorator 
  * @returns Resolved instance with injected dependencies.
  */
 export function resolve<T>(target: new (...args: any[]) => T): T {
-	const injections = Reflect.getMetadata('inject:params', target) || []
-	const paramTypes = Reflect.getMetadata('design:paramtypes', target) || []
+	const injections = Reflect.getMetadata("inject:params", target) || []
+	const paramTypes = Reflect.getMetadata("design:paramtypes", target) || []
 	const params: any[] = paramTypes.map((p: any, i: number) => {
 		const token = injections.find((x: any) => x.index === i)?.token ?? p
 		if (!container.has(token)) container.set(token, resolve(token))

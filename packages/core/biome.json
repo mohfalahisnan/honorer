@@ -1,4 +1,4 @@
 {
 	"$schema": "https://biomejs.dev/schemas/2.2.7/schema.json",
-	"extends": ["../biome-common.json"]
+	"extends": "//"
 }

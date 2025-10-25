@@ -1,4 +1,4 @@
-import { getRandomInt } from './getRandomInt'
+import { getRandomInt } from "./getRandomInt"
 
 // biome-ignore lint/complexity/noStaticOnlyClass: only static class
 export class ArrayUtils {

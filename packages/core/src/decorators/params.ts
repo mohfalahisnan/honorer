@@ -1,9 +1,9 @@
-import 'reflect-metadata'
-import type { Context } from 'hono'
-import type { ZodTypeAny, z } from 'zod'
+import "reflect-metadata"
+import type { Context } from "hono"
+import type { ZodTypeAny, z } from "zod"
 
-const META_PARAM_SCHEMA = 'route:paramSchema'
-const CTX_PARAM_KEY = 'params'
+const META_PARAM_SCHEMA = "route:paramSchema"
+const CTX_PARAM_KEY = "params"
 
 /**
  * Context type helper exposing parsed `params` via Hono context variables.

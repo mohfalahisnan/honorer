@@ -1,9 +1,9 @@
-import 'reflect-metadata'
-import type { Context } from 'hono'
-import type { ZodTypeAny, z } from 'zod'
+import "reflect-metadata"
+import type { Context } from "hono"
+import type { ZodTypeAny, z } from "zod"
 
-const META_BODY_SCHEMA = 'route:bodySchema'
-const CTX_BODY_KEY = 'body'
+const META_BODY_SCHEMA = "route:bodySchema"
+const CTX_BODY_KEY = "body"
 
 /**
  * Binding describing the method parameter index and its associated Zod schema for body parsing.

@@ -1,4 +1,4 @@
-import { type Insertable, Kysely, type Selectable, type Updateable } from 'kysely'
+import { type Insertable, Kysely, type Selectable, type Updateable } from "kysely"
 
 /**
  * Extended Kysely database class that provides a fluent CRUD controller factory.
@@ -25,7 +25,7 @@ export class Database<DB> extends Kysely<DB> {
 		updateById: (id: unknown, patch: Updateable<DB[Table]>) => Promise<Selectable<DB[Table]> | undefined>
 		deleteById: (id: unknown) => Promise<number>
 	} {
-		const idColumn = (opts?.idColumn ?? ('id' as Extract<keyof DB[Table], string>)) as any
+		const idColumn = (opts?.idColumn ?? ("id" as Extract<keyof DB[Table], string>)) as any
 
 		return {
 			/**
@@ -42,7 +42,7 @@ export class Database<DB> extends Kysely<DB> {
 			 */
 			getById: async (id: unknown): Promise<Selectable<DB[Table]> | undefined> => {
 				const qb = this.selectFrom(table).selectAll()
-				const row = await (qb.where as any)(idColumn, '=', id as any).executeTakeFirst()
+				const row = await (qb.where as any)(idColumn, "=", id as any).executeTakeFirst()
 				return row as unknown as Selectable<DB[Table]> | undefined
 			},
 			/**
@@ -67,7 +67,7 @@ export class Database<DB> extends Kysely<DB> {
 			): Promise<Selectable<DB[Table]> | undefined> => {
 				const qb = this.updateTable(table)
 				const row = await (qb.set as any)(patch as any)
-					.where(idColumn, '=', id as any)
+					.where(idColumn, "=", id as any)
 					.returningAll()
 					.executeTakeFirst()
 				return row as unknown as Selectable<DB[Table]> | undefined
@@ -79,7 +79,7 @@ export class Database<DB> extends Kysely<DB> {
 			 */
 			deleteById: async (id: unknown): Promise<number> => {
 				const qb = this.deleteFrom(table)
-				const res = await (qb.where as any)(idColumn, '=', id as any).execute()
+				const res = await (qb.where as any)(idColumn, "=", id as any).execute()
 				return Array.isArray(res) ? res.length : 0
 			},
 		}
