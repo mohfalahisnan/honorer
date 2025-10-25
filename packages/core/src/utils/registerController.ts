@@ -1,12 +1,13 @@
 import type { Context, Hono } from "hono"
 import type { CreateAppConfig, RouteRecord } from "../app"
 import type { AppBindings, AppVariables } from "../app/factory"
-import { getBodySchemaBindings, getParamSchemaBindings, getQuerySchemaBindings } from "../decorators"
-import { resolve } from "../decorators/inject"
-import { getControllerMiddleware, getRouteMiddleware } from "../decorators/middleware"
+import { getBodySchemaBindings } from "../body"
 import { Container, rootContainer } from "../di/container"
+import { resolve } from "../inject"
+import { getControllerMiddleware, getRouteMiddleware } from "../middleware"
+import { getParamSchemaBindings } from "../param"
+import { getQuerySchemaBindings } from "../query"
 import type { BodySchemaBinding, ParamSchemaBinding, QuerySchemaBinding } from "../types"
-
 import { createBodyValidator, createParamValidator, createQueryValidator } from "../validators/factory"
 import { ApiResponse, formatReturn } from "./response"
 
@@ -78,7 +79,6 @@ export function registerControllers(
 			const bodySchemaBindings: BodySchemaBinding<any>[] = propertyKey
 				? getBodySchemaBindings(Controller.prototype, propertyKey)
 				: []
-
 
 			if (
 				bindings.length > 0 ||
@@ -174,7 +174,6 @@ export function registerControllers(
 			}
 		}
 	}
-
 }
 
 /**
@@ -190,7 +189,6 @@ export async function registerControllersWithModules(
 	} = {},
 ): Promise<void> {
 	const { formatResponse = true, container } = options
-
 
 	for (const Controller of controllers) {
 		const prefix: string = Reflect.getMetadata("prefix", Controller) || ""
@@ -377,5 +375,4 @@ export async function registerControllersWithModules(
 			}
 		}
 	}
-
 }

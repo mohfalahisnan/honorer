@@ -9,6 +9,7 @@ This document outlines a comprehensive implementation plan for refactoring the `
 ### 1.1 Existing Architecture Overview
 
 **Current Structure:**
+
 ```
 packages/core/src/
 ├── app.ts                    # Basic Hono app creation
@@ -25,16 +26,23 @@ packages/core/src/
 ```
 
 **Current Capabilities:**
-- Basic Hono app creation via `createApp()`
-- Class-based controllers with route decorators
-- Simple DI container with singleton scope
-- Schema-based validation for params/query/body
-- Automatic type generation for routes
-- Response envelope formatting
+
+* Basic Hono app creation via `createApp()`
+
+* Class-based controllers with route decorators
+
+* Simple DI container with singleton scope
+
+* Schema-based validation for params/query/body
+
+* Automatic type generation for routes
+
+* Response envelope formatting
 
 ### 1.2 Gap Analysis vs RFC Requirements
 
 **Missing Components:**
+
 1. **Module System**: No `@Module` decorator or module registration
 2. **Factory Pattern**: No Hono factory with typed context
 3. **Middleware Composition**: No `@Use` decorator for middleware layering
@@ -43,17 +51,23 @@ packages/core/src/
 6. **Context Variables**: Not leveraging `c.set()`/`c.get()` for type safety
 
 **Architectural Misalignments:**
-- Reflection-based parameter injection vs middleware composition
-- Monolithic controller registration vs modular approach
-- Basic DI container vs hierarchical module containers
-- Manual schema parsing vs Hono validator integration
+
+* Reflection-based parameter injection vs middleware composition
+
+* Monolithic controller registration vs modular approach
+
+* Basic DI container vs hierarchical module containers
+
+* Manual schema parsing vs Hono validator integration
 
 ## 2. Implementation Roadmap
 
 ### 2.1 Phase 1: Foundation & Factory Pattern (Week 1)
 
 #### 2.1.1 App Factory Implementation
-**File: `src/app/factory.ts`**
+
+**File:** **`src/app/factory.ts`**
+
 ```typescript
 import { Hono } from 'hono'
 import { createFactory } from 'hono/factory'
@@ -97,7 +111,9 @@ export function createHonorerApp(config: {
 ```
 
 #### 2.1.2 Backward Compatibility Layer
-**File: `src/app.ts` (Updated)**
+
+**File:** **`src/app.ts`** **(Updated)**
+
 ```typescript
 import { createHonorerApp } from './app/factory'
 import { registerControllers } from './utils/registerController'
@@ -116,7 +132,9 @@ export function createApp(config: CreateAppConfig = {}): HonorerApp {
 ```
 
 #### 2.1.3 Response Envelope Middleware
-**File: `src/middleware/responseEnvelope.ts`**
+
+**File:** **`src/middleware/responseEnvelope.ts`**
+
 ```typescript
 import type { MiddlewareHandler } from 'hono'
 import { formatReturn } from '../utils/response'
@@ -137,7 +155,9 @@ export function responseEnvelopeMiddleware(): MiddlewareHandler {
 ### 2.2 Phase 2: Module System & DI Container (Week 1-2)
 
 #### 2.2.1 Module Decorator & Types
-**File: `src/module/types.ts`**
+
+**File:** **`src/module/types.ts`**
+
 ```typescript
 import type { Context } from 'hono'
 
@@ -156,7 +176,8 @@ export interface ModuleMeta {
 export type ModuleClass = new (...args: any[]) => any
 ```
 
-**File: `src/module/decorator.ts`**
+**File:** **`src/module/decorator.ts`**
+
 ```typescript
 import 'reflect-metadata'
 import type { ModuleMeta } from './types'
@@ -169,7 +190,9 @@ export function Module(meta: ModuleMeta): ClassDecorator {
 ```
 
 #### 2.2.2 Hierarchical DI Container
-**File: `src/di/container.ts`**
+
+**File:** **`src/di/container.ts`**
+
 ```typescript
 export class Container {
   private instances = new Map<any, any>()
@@ -232,7 +255,9 @@ export const rootContainer = new Container()
 ```
 
 #### 2.2.3 Enhanced DI Decorators
-**File: `src/decorators/inject.ts` (Updated)**
+
+**File:** **`src/decorators/inject.ts`** **(Updated)**
+
 ```typescript
 import 'reflect-metadata'
 import type { ProviderToken } from '../module/types'
@@ -262,7 +287,9 @@ export const InjectParam = <T>(token: new (...args: any[]) => T): ParameterDecor
 ### 2.3 Phase 3: Middleware System & Validator Integration (Week 2)
 
 #### 2.3.1 Use Decorator for Middleware
-**File: `src/decorators/middleware.ts`**
+
+**File:** **`src/decorators/middleware.ts`**
+
 ```typescript
 import 'reflect-metadata'
 import type { MiddlewareFn } from '../module/types'
@@ -283,7 +310,9 @@ export function Use(...middlewares: MiddlewareFn[]): ClassDecorator & MethodDeco
 ```
 
 #### 2.3.2 Hono Validator Integration
-**File: `src/validators/factory.ts`**
+
+**File:** **`src/validators/factory.ts`**
+
 ```typescript
 import { validator } from 'hono/validator'
 import type { ZodSchema } from 'zod'
@@ -340,7 +369,9 @@ export function createBodyValidator(schema: ZodSchema) {
 ### 2.4 Phase 4: Module Registration Factory (Week 2)
 
 #### 2.4.1 Module Registration Implementation
-**File: `src/module/registerModule.ts`**
+
+**File:** **`src/module/registerModule.ts`**
+
 ```typescript
 import type { Hono } from 'hono'
 import { Container } from '../di/container'
@@ -429,7 +460,9 @@ function registerController(
 ### 2.5 Phase 5: Enhanced Type Generation (Week 2-3)
 
 #### 2.5.1 Module-aware Type Generator
-**File: `src/types/generator.ts`**
+
+**File:** **`src/types/generator.ts`**
+
 ```typescript
 import * as fs from 'node:fs'
 import * as path from 'node:path'
@@ -466,18 +499,24 @@ export function generateModuleTypes(modules: { module: any; meta: ModuleMeta }[]
 ## 3. Backward Compatibility Strategy
 
 ### 3.1 API Preservation
-- **`createApp()`**: Maintained as wrapper around `createHonorerApp()`
-- **Existing decorators**: All current decorators remain functional
-- **Controller registration**: `registerControllers()` continues to work
-- **DI system**: Existing `@Injectable`, `@Inject` preserved with enhanced functionality
+
+* **`createApp()`**: Maintained as wrapper around `createHonorerApp()`
+
+* **Existing decorators**: All current decorators remain functional
+
+* **Controller registration**: `registerControllers()` continues to work
+
+* **DI system**: Existing `@Injectable`, `@Inject` preserved with enhanced functionality
 
 ### 3.2 Migration Path
+
 1. **Phase 1**: Introduce new APIs alongside existing ones
 2. **Phase 2**: Update documentation to recommend new patterns
 3. **Phase 3**: Add deprecation warnings (log-only, non-breaking)
 4. **Phase 4**: Optional breaking changes in major version
 
 ### 3.3 Compatibility Testing
+
 ```typescript
 // Ensure existing apps continue to work
 describe('Backward Compatibility', () => {
@@ -507,6 +546,7 @@ describe('Backward Compatibility', () => {
 ### 4.1 Unit Tests
 
 #### 4.1.1 Factory & App Creation
+
 ```typescript
 describe('App Factory', () => {
   it('should create typed Hono app with factory', () => {
@@ -522,6 +562,7 @@ describe('App Factory', () => {
 ```
 
 #### 4.1.2 Module System
+
 ```typescript
 describe('Module Registration', () => {
   it('should register module with controllers and providers', () => {
@@ -539,6 +580,7 @@ describe('Module Registration', () => {
 ```
 
 #### 4.1.3 DI Container
+
 ```typescript
 describe('Hierarchical DI Container', () => {
   it('should resolve dependencies from parent container', () => {
@@ -553,6 +595,7 @@ describe('Hierarchical DI Container', () => {
 ```
 
 #### 4.1.4 Middleware Composition
+
 ```typescript
 describe('Middleware Composition', () => {
   it('should apply middleware in correct order', async () => {
@@ -577,6 +620,7 @@ describe('Middleware Composition', () => {
 ### 4.2 Integration Tests
 
 #### 4.2.1 End-to-End Module Testing
+
 ```typescript
 describe('Module Integration', () => {
   it('should handle complete request flow through module', async () => {
@@ -614,6 +658,7 @@ describe('Module Integration', () => {
 ```
 
 ### 4.3 Type Tests
+
 ```typescript
 describe('Type Safety', () => {
   it('should provide correct context variable types', () => {
@@ -628,6 +673,7 @@ describe('Type Safety', () => {
 ```
 
 ### 4.4 Snapshot Tests
+
 ```typescript
 describe('Type Generation', () => {
   it('should generate correct .honorer/index.d.ts', () => {
@@ -643,6 +689,7 @@ describe('Type Generation', () => {
 ## 5. Performance Benchmarking Plan
 
 ### 5.1 Benchmark Setup
+
 ```typescript
 // benchmark/setup.ts
 import autocannon from 'autocannon'
@@ -673,6 +720,7 @@ export async function runBenchmark(name: string, app: any) {
 ### 5.2 Benchmark Scenarios
 
 #### 5.2.1 Simple JSON Response
+
 ```typescript
 describe('Simple JSON Benchmark', () => {
   it('should maintain performance for basic routes', async () => {
@@ -690,6 +738,7 @@ describe('Simple JSON Benchmark', () => {
 ```
 
 #### 5.2.2 Validation-Heavy Routes
+
 ```typescript
 describe('Validation Benchmark', () => {
   it('should improve performance with Hono validators', async () => {
@@ -704,6 +753,7 @@ describe('Validation Benchmark', () => {
 ```
 
 #### 5.2.3 Error Path Performance
+
 ```typescript
 describe('Error Handling Benchmark', () => {
   it('should handle errors efficiently', async () => {
@@ -717,74 +767,114 @@ describe('Error Handling Benchmark', () => {
 ```
 
 ### 5.3 Performance Metrics
-- **Latency**: p50, p95, p99 response times
-- **Throughput**: Requests per second
-- **Memory**: Heap usage during load
-- **CPU**: CPU utilization under load
+
+* **Latency**: p50, p95, p99 response times
+
+* **Throughput**: Requests per second
+
+* **Memory**: Heap usage during load
+
+* **CPU**: CPU utilization under load
 
 ### 5.4 Performance Targets
-- **Latency overhead**: ≤ 5% vs baseline Hono
-- **Memory overhead**: ≤ 10% vs current implementation  
-- **Throughput**: ≥ 95% of baseline performance
-- **Error handling**: ≤ 2x latency of success path
+
+* **Latency overhead**: ≤ 5% vs baseline Hono
+
+* **Memory overhead**: ≤ 10% vs current implementation
+
+* **Throughput**: ≥ 95% of baseline performance
+
+* **Error handling**: ≤ 2x latency of success path
 
 ## 6. Documentation Updates
 
 ### 6.1 API Documentation
-- Update JSDoc comments for all new APIs
-- Add usage examples for module system
-- Document migration patterns from legacy to new APIs
+
+* Update JSDoc comments for all new APIs
+
+* Add usage examples for module system
+
+* Document migration patterns from legacy to new APIs
 
 ### 6.2 Architecture Guide
-- Create comprehensive guide explaining module system
-- Document DI container usage and best practices
-- Provide middleware composition examples
+
+* Create comprehensive guide explaining module system
+
+* Document DI container usage and best practices
+
+* Provide middleware composition examples
 
 ### 6.3 Migration Guide
-- Step-by-step migration from legacy to module-based architecture
-- Code examples showing before/after patterns
-- Performance optimization tips
+
+* Step-by-step migration from legacy to module-based architecture
+
+* Code examples showing before/after patterns
+
+* Performance optimization tips
 
 ## 7. Deliverables & Timeline
 
 ### Week 1: Foundation
-- [ ] App factory implementation
-- [ ] Backward compatibility layer
-- [ ] Basic module system
-- [ ] Hierarchical DI container
-- [ ] Unit tests for core components
+
+* [ ] App factory implementation
+
+* [ ] Backward compatibility layer
+
+* [ ] Basic module system
+
+* [ ] Hierarchical DI container
+
+* [ ] Unit tests for core components
 
 ### Week 2: Integration
-- [ ] Module registration factory
-- [ ] Middleware composition system
-- [ ] Hono validator integration
-- [ ] Enhanced decorators
-- [ ] Integration tests
+
+* [ ] Module registration factory
+
+* [ ] Middleware composition system
+
+* [ ] Hono validator integration
+
+* [ ] Enhanced decorators
+
+* [ ] Integration tests
 
 ### Week 3: Polish & Optimization
-- [ ] Performance benchmarking
-- [ ] Type generation enhancements
-- [ ] Documentation updates
-- [ ] Migration guide
-- [ ] Final testing and validation
+
+* [ ] Performance benchmarking
+
+* [ ] Type generation enhancements
+
+* [ ] Documentation updates
+
+* [ ] Migration guide
+
+* [ ] Final testing and validation
 
 ## 8. Risk Mitigation
 
 ### 8.1 Breaking Changes
-- **Risk**: Accidental breaking changes to existing APIs
-- **Mitigation**: Comprehensive backward compatibility tests
+
+* **Risk**: Accidental breaking changes to existing APIs
+
+* **Mitigation**: Comprehensive backward compatibility tests
 
 ### 8.2 Performance Regression
-- **Risk**: New architecture introduces performance overhead
-- **Mitigation**: Continuous benchmarking and optimization
+
+* **Risk**: New architecture introduces performance overhead
+
+* **Mitigation**: Continuous benchmarking and optimization
 
 ### 8.3 Type Safety
-- **Risk**: Loss of type safety in new system
-- **Mitigation**: Extensive type tests and TypeScript strict mode
+
+* **Risk**: Loss of type safety in new system
+
+* **Mitigation**: Extensive type tests and TypeScript strict mode
 
 ### 8.4 Complexity
-- **Risk**: Over-engineering the solution
-- **Mitigation**: Incremental implementation with regular reviews
+
+* **Risk**: Over-engineering the solution
+
+* **Mitigation**: Incremental implementation with regular reviews
 
 ## Conclusion
 

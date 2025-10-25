@@ -1,6 +1,6 @@
 import "reflect-metadata"
-import { rootContainer } from '../di/container'
-import type { ProviderToken } from '../module/types'
+import { rootContainer } from "../di/container"
+import type { ProviderToken } from "../module/types"
 
 // Legacy container for backward compatibility
 const legacyContainer = new Map<any, any>()
@@ -14,21 +14,21 @@ const legacyContainer = new Map<any, any>()
 export function Injectable(target?: any): any {
 	// If called with target directly (@Injectable)
 	if (target) {
-		Reflect.defineMetadata('di:injectable', true, target)
-		
+		Reflect.defineMetadata("di:injectable", true, target)
+
 		// Register with new hierarchical container
 		rootContainer.register(target)
-		
+
 		return target
 	}
-	
+
 	// If called as factory (@Injectable())
 	return (target: any) => {
-		Reflect.defineMetadata('di:injectable', true, target)
-		
+		Reflect.defineMetadata("di:injectable", true, target)
+
 		// Register with new hierarchical container
 		rootContainer.register(target)
-		
+
 		return target
 	}
 }
@@ -52,13 +52,13 @@ export const Inject = <T>(token: new (...args: any[]) => T): ParameterDecorator 
 /**
  * Property decorator to inject a dependency into a class property.
  * This is the new preferred way for property injection in the module system.
- * 
+ *
  * @param token Provider token to inject
  */
 export function InjectProperty(token: ProviderToken): PropertyDecorator {
 	return (target, propertyKey) => {
-		const existing = Reflect.getMetadata('di:props', target.constructor) || []
-		Reflect.defineMetadata('di:props', [...existing, { key: propertyKey, token }], target.constructor)
+		const existing = Reflect.getMetadata("di:props", target.constructor) || []
+		Reflect.defineMetadata("di:props", [...existing, { key: propertyKey, token }], target.constructor)
 	}
 }
 
@@ -78,7 +78,7 @@ export function resolve<T>(target: new (...args: any[]) => T): T {
 	if (rootContainer.has(target)) {
 		return rootContainer.resolve(target)
 	}
-	
+
 	// Fall back to legacy behavior for backward compatibility
 	const injections = Reflect.getMetadata("inject:params", target) || []
 	const paramTypes = Reflect.getMetadata("design:paramtypes", target) || []

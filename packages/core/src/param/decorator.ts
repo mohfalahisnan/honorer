@@ -1,16 +1,8 @@
 import "reflect-metadata"
 import type { Context } from "hono"
 import type { ZodTypeAny, z } from "zod"
-
-const META_PARAM_SCHEMA = "route:paramSchema"
-const CTX_PARAM_KEY = "params"
-
-/**
- * Context type helper exposing parsed `params` via Hono context variables.
- */
-export type ParamsContext<T extends ZodTypeAny> = Context<{
-	Variables: { [CTX_PARAM_KEY]: z.infer<T> }
-}>
+import { CTX_PARAM_KEY, META_PARAM_SCHEMA } from "./constant"
+import type { ParamSchemaBinding, ParamsContext } from "./types"
 
 /**
  * Parameter decorator that attaches a Zod schema to a method parameter.
@@ -37,7 +29,7 @@ export type ParamsContext<T extends ZodTypeAny> = Context<{
  * 		// `order` is validated and typed
  * 		return c.json({ order });
  * 	}
- * 
+ *
  *   // Legacy usage without validation
  *   async getItem(@Params() params: any) {
  *     return c.json({ id: params.id });
@@ -64,14 +56,6 @@ export function Params<T extends ZodTypeAny>(schema?: T): ParameterDecorator {
 			Reflect.defineMetadata("route:params", legacyBindings, target, propertyKey!)
 		}
 	}
-}
-
-/**
- * Binding describing the parameter index and its associated Zod schema.
- */
-export type ParamSchemaBinding<T extends ZodTypeAny> = {
-	index: number
-	schema: T
 }
 
 /**

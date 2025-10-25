@@ -1,7 +1,7 @@
+import { Controller, Get, Injectable } from "@honorer/core"
 import { afterEach, beforeEach, describe, expect, it } from "vitest"
 import { createHonorerApp } from "../app/factory"
-import { Controller, Get, Injectable } from "../decorators"
-import { Container, rootContainer } from "../di/container"
+import { rootContainer } from "../di/container"
 import { getModuleMeta, Module } from "../module/decorator"
 import { createModuleFactory, ModuleRegistrationFactory } from "../module/factory"
 

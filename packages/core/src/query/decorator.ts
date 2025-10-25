@@ -1,17 +1,8 @@
 import "reflect-metadata"
 import type { Context } from "hono"
 import type { ZodTypeAny, z } from "zod"
-
-const META_QUERY_PARAM_SCHEMA = "route:queryParamSchema"
-const CTX_QUERY_KEY = "query"
-
-/**
- * Binding describing the method parameter index and its Zod schema for query parsing.
- */
-export type QuerySchemaBinding<T extends ZodTypeAny> = {
-	index: number
-	schema: T
-}
+import { CTX_QUERY_KEY, META_QUERY_PARAM_SCHEMA } from "./constant"
+import type { QuerySchemaBinding } from "./types"
 
 /**
  * Parameter decorator that attaches a Zod schema for query-string parsing.
@@ -42,7 +33,7 @@ export type QuerySchemaBinding<T extends ZodTypeAny> = {
  *     // `query` is validated and typed
  *     return c.json({ users: [], page: query.page, limit: query.limit })
  *   }
- * 
+ *
  *   // Legacy usage without validation
  *   async getItems(@Query() query: any) {
  *     return c.json({ page: query.page, limit: query.limit });

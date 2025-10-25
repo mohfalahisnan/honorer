@@ -1,12 +1,7 @@
 import "reflect-metadata"
-import { beforeEach, describe, expect, it } from "vitest"
-import { z } from "zod"
-import { Inject, Injectable } from "../decorators"
-import { Body } from "../decorators/body"
-import { Controller, Delete, Get, Post, Put } from "../decorators/controller"
-import { Params } from "../decorators/params"
-import { Query } from "../decorators/query"
-import { createApp } from "../index"
+
+import { Body, Controller, createApp, Delete, Get, Inject, Injectable, Params, Post, Put, Query } from "@honorer/core"
+import { describe, expect, it } from "vitest"
 
 // Legacy service for testing
 @Injectable

@@ -1,17 +1,10 @@
 import "reflect-metadata"
 import type { Context } from "hono"
 import type { ZodTypeAny, z } from "zod"
+import type { BodySchemaBinding } from "./types"
 
 const META_BODY_SCHEMA = "route:bodySchema"
 const CTX_BODY_KEY = "body"
-
-/**
- * Binding describing the method parameter index and its associated Zod schema for body parsing.
- */
-export type BodySchemaBinding<T extends ZodTypeAny> = {
-	index: number
-	schema: T
-}
 
 /**
  * Parameter decorator that attaches a Zod schema for request body parsing.
@@ -41,7 +34,8 @@ export function Body<T extends ZodTypeAny>(schema?: T): ParameterDecorator {
 	return (target, propertyKey, parameterIndex) => {
 		if (schema) {
 			// New schema-based validation
-			const list: BodySchemaBinding<ZodTypeAny>[] = Reflect.getMetadata(META_BODY_SCHEMA, target, propertyKey!) || []
+			const list: BodySchemaBinding<ZodTypeAny>[] =
+				Reflect.getMetadata(META_BODY_SCHEMA, target, propertyKey!) || []
 			list.push({ index: parameterIndex!, schema })
 			Reflect.defineMetadata(META_BODY_SCHEMA, list, target, propertyKey!)
 		} else {
