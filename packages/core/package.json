@@ -1,9 +1,27 @@
 {
 	"name": "@honorer/core",
-	"version": "0.1.5-beta.2",
+	"version": "0.1.5-beta.3",
 	"type": "module",
 	"main": "dist/index.js",
 	"types": "dist/index.d.ts",
+	"description": "Module-first toolkit for Hono with decorators, DI, Zod validation, and response helpers.",
+	"keywords": [
+		"hono",
+		"typescript",
+		"decorators",
+		"dependency-injection",
+		"zod",
+		"validation",
+		"routing",
+		"modules",
+		"framework"
+	],
+	"license": "MIT",
+	"packageManager": "pnpm@9",
+	"engines": {
+		"node": ">=18.18",
+		"pnpm": ">=9"
+	},
 	"files": [
 		"dist",
 		"package.json",
@@ -11,7 +29,17 @@
 	],
 	"sideEffects": false,
 	"publishConfig": {
-		"access": "public"
+		"access": "public",
+		"tag": "beta"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/mohfalahisnan/honorer.git",
+		"directory": "packages/core"
+	},
+	"homepage": "https://github.com/mohfalahisnan/honorer#readme",
+	"bugs": {
+		"url": "https://github.com/mohfalahisnan/honorer/issues"
 	},
 	"exports": {
 		".": {
@@ -37,7 +65,6 @@
 	},
 	"devDependencies": {
 		"@biomejs/biome": "^2.2.7",
-		"@hono/node-server": "^1.19.5",
 		"@types/node": "^20.11.17",
 		"hono": "^4.10.2",
 		"kysely": "^0.28.8",
@@ -48,7 +75,6 @@
 		"zod": "^4.1.12"
 	},
 	"peerDependencies": {
-		"@hono/node-server": "^1.19.5",
 		"hono": "^4.10.2",
 		"kysely": "^0.28.8",
 		"zod": "^4.1.12"
