@@ -190,6 +190,9 @@ importers:
       '@types/node':
         specifier: ^20.11.17
         version: 20.19.23
+      '@types/react':
+        specifier: ^19.2.2
+        version: 19.2.2
       tsx:
         specifier: ^4.20.6
         version: 4.20.6
