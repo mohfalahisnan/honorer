@@ -23,8 +23,11 @@ export type ParamsContext<T extends ZodTypeAny> = Context<{
  * The decorator can be used multiple times on the same method; each schema is
  * stored separately and later processed in declaration order.
  *
+ * For backward compatibility, can be called without a schema: @Params()
+ * In this case, raw parameters are injected without validation.
+ *
  * @param schema Zod schema describing the expected shape of route + query parameters.
- *               Must extend {@link ZodTypeAny}.
+ *               Must extend {@link ZodTypeAny}. Optional for backward compatibility.
  * @returns A parameter decorator function that registers the schema for runtime validation.
  *
  * @example
@@ -34,18 +37,32 @@ export type ParamsContext<T extends ZodTypeAny> = Context<{
  * 		// `order` is validated and typed
  * 		return c.json({ order });
  * 	}
+ * 
+ *   // Legacy usage without validation
+ *   async getItem(@Params() params: any) {
+ *     return c.json({ id: params.id });
+ *   }
  * }
  * ```
  *
  * @see {@link paramsOf}  Utility to manually retrieve parsed parameters inside a handler.
  * @see {@link bindRoute}  Helper that wraps a handler with automatic validation.
  */
-export function Params<T extends ZodTypeAny>(schema: T): ParameterDecorator {
+export function Params<T extends ZodTypeAny>(schema?: T): ParameterDecorator {
 	return (target, propertyKey, parameterIndex) => {
-		const list: ParamSchemaBinding<ZodTypeAny>[] =
-			Reflect.getMetadata(META_PARAM_SCHEMA, target, propertyKey!) || []
-		list.push({ index: parameterIndex!, schema })
-		Reflect.defineMetadata(META_PARAM_SCHEMA, list, target, propertyKey!)
+		if (schema) {
+			// New schema-based validation
+			const list: ParamSchemaBinding<ZodTypeAny>[] =
+				Reflect.getMetadata(META_PARAM_SCHEMA, target, propertyKey!) || []
+			list.push({ index: parameterIndex!, schema })
+			Reflect.defineMetadata(META_PARAM_SCHEMA, list, target, propertyKey!)
+		} else {
+			// Legacy raw parameter injection for backward compatibility
+			const legacyBindings: Array<{ index: number; source: string; name: string }> =
+				Reflect.getMetadata("route:params", target, propertyKey!) || []
+			legacyBindings.push({ index: parameterIndex!, source: "param", name: "all" })
+			Reflect.defineMetadata("route:params", legacyBindings, target, propertyKey!)
+		}
 	}
 }
 

@@ -1,15 +1,35 @@
 import "reflect-metadata"
+import { rootContainer } from '../di/container'
+import type { ProviderToken } from '../module/types'
 
-const container = new Map<any, any>()
+// Legacy container for backward compatibility
+const legacyContainer = new Map<any, any>()
 
 /**
- * Class decorator that marks a class as injectable and eagerly registers an instance
- * in the internal DI container. If an instance for the token does not yet exist,
- * one is created and stored.
+ * Marks a class as injectable for dependency injection.
+ * In the new system, this registers the class with the root container.
+ * For backward compatibility, it also registers with the legacy container.
+ * Can be used as @Injectable or @Injectable()
  */
-export const Injectable: ClassDecorator = (target: any) => {
-	if (!container.has(target)) {
-		container.set(target, new (target as any)())
+export function Injectable(target?: any): any {
+	// If called with target directly (@Injectable)
+	if (target) {
+		Reflect.defineMetadata('di:injectable', true, target)
+		
+		// Register with new hierarchical container
+		rootContainer.register(target)
+		
+		return target
+	}
+	
+	// If called as factory (@Injectable())
+	return (target: any) => {
+		Reflect.defineMetadata('di:injectable', true, target)
+		
+		// Register with new hierarchical container
+		rootContainer.register(target)
+		
+		return target
 	}
 }
 
@@ -25,8 +45,20 @@ export const Inject = <T>(token: new (...args: any[]) => T): ParameterDecorator 
 	return (target: Object, _key: string | symbol | undefined, index: number) => {
 		const existing = Reflect.getMetadata("inject:params", target) || []
 		existing.push({ index, token })
-
 		Reflect.defineMetadata("inject:params", existing, target)
+	}
+}
+
+/**
+ * Property decorator to inject a dependency into a class property.
+ * This is the new preferred way for property injection in the module system.
+ * 
+ * @param token Provider token to inject
+ */
+export function InjectProperty(token: ProviderToken): PropertyDecorator {
+	return (target, propertyKey) => {
+		const existing = Reflect.getMetadata('di:props', target.constructor) || []
+		Reflect.defineMetadata('di:props', [...existing, { key: propertyKey, token }], target.constructor)
 	}
 }
 
@@ -35,20 +67,25 @@ export const Inject = <T>(token: new (...args: any[]) => T): ParameterDecorator 
  * its constructor dependencies based on recorded `Inject` metadata or design-time
  * types from `reflect-metadata`.
  *
- * - Uses `design:paramtypes` to determine constructor parameter types.
- * - If a parameter has an explicit `Inject` token, it is used preferentially.
- * - Dependencies are singleton-scoped within the internal container map.
+ * This function maintains backward compatibility with the legacy container
+ * while also supporting the new hierarchical container system.
  *
  * @param target Class constructor to instantiate.
  * @returns Resolved instance with injected dependencies.
  */
 export function resolve<T>(target: new (...args: any[]) => T): T {
+	// Try new container first
+	if (rootContainer.has(target)) {
+		return rootContainer.resolve(target)
+	}
+	
+	// Fall back to legacy behavior for backward compatibility
 	const injections = Reflect.getMetadata("inject:params", target) || []
 	const paramTypes = Reflect.getMetadata("design:paramtypes", target) || []
 	const params: any[] = paramTypes.map((p: any, i: number) => {
 		const token = injections.find((x: any) => x.index === i)?.token ?? p
-		if (!container.has(token)) container.set(token, resolve(token))
-		return container.get(token)
+		if (!legacyContainer.has(token)) legacyContainer.set(token, resolve(token))
+		return legacyContainer.get(token)
 	})
 	return new target(...params)
 }
@@ -61,7 +98,8 @@ export function resolve<T>(target: new (...args: any[]) => T): T {
  * @param mock Instance to associate with the token.
  */
 export function override<T>(token: new (...args: any[]) => T, mock: T): void {
-	container.set(token, mock)
+	legacyContainer.set(token, mock)
+	rootContainer.override(token, mock)
 }
 
 /**
@@ -69,5 +107,9 @@ export function override<T>(token: new (...args: any[]) => T, mock: T): void {
  * Use with caution; this will drop all singletons and cached providers.
  */
 export function resetContainer(): void {
-	container.clear()
+	legacyContainer.clear()
+	rootContainer.clear()
 }
+
+// Alias for backward compatibility
+export const diResolve = resolve

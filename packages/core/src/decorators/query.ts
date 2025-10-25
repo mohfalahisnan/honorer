@@ -20,7 +20,10 @@ export type QuerySchemaBinding<T extends ZodTypeAny> = {
  * 2. Cache the parsed result under `c.get('query')`.
  * 3. Inject the validated object into the decorated parameter.
  *
- * @param schema - Zod schema describing the expected query parameters.
+ * For backward compatibility, can be called without a schema: @Query()
+ * In this case, raw query parameters are injected without validation.
+ *
+ * @param schema - Zod schema describing the expected query parameters. Optional for backward compatibility.
  * @returns ParameterDecorator
  *
  * @example
@@ -39,15 +42,29 @@ export type QuerySchemaBinding<T extends ZodTypeAny> = {
  *     // `query` is validated and typed
  *     return c.json({ users: [], page: query.page, limit: query.limit })
  *   }
+ * 
+ *   // Legacy usage without validation
+ *   async getItems(@Query() query: any) {
+ *     return c.json({ page: query.page, limit: query.limit });
+ *   }
  * }
  * ```
  */
-export function Query<T extends ZodTypeAny>(schema: T): ParameterDecorator {
+export function Query<T extends ZodTypeAny>(schema?: T): ParameterDecorator {
 	return (target, propertyKey, parameterIndex) => {
-		const list: QuerySchemaBinding<ZodTypeAny>[] =
-			Reflect.getMetadata(META_QUERY_PARAM_SCHEMA, target, propertyKey!) || []
-		list.push({ index: parameterIndex!, schema })
-		Reflect.defineMetadata(META_QUERY_PARAM_SCHEMA, list, target, propertyKey!)
+		if (schema) {
+			// New schema-based validation
+			const list: QuerySchemaBinding<ZodTypeAny>[] =
+				Reflect.getMetadata(META_QUERY_PARAM_SCHEMA, target, propertyKey!) || []
+			list.push({ index: parameterIndex!, schema })
+			Reflect.defineMetadata(META_QUERY_PARAM_SCHEMA, list, target, propertyKey!)
+		} else {
+			// Legacy raw query injection for backward compatibility
+			const legacyBindings: Array<{ index: number; source: string; name: string }> =
+				Reflect.getMetadata("route:params", target, propertyKey!) || []
+			legacyBindings.push({ index: parameterIndex!, source: "query", name: "all" })
+			Reflect.defineMetadata("route:params", legacyBindings, target, propertyKey!)
+		}
 	}
 }
 

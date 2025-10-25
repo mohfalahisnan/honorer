@@ -37,11 +37,19 @@ export type BodySchemaBinding<T extends ZodTypeAny> = {
  * }
  * ```
  */
-export function Body<T extends ZodTypeAny>(schema: T): ParameterDecorator {
+export function Body<T extends ZodTypeAny>(schema?: T): ParameterDecorator {
 	return (target, propertyKey, parameterIndex) => {
-		const list: BodySchemaBinding<ZodTypeAny>[] = Reflect.getMetadata(META_BODY_SCHEMA, target, propertyKey!) || []
-		list.push({ index: parameterIndex!, schema })
-		Reflect.defineMetadata(META_BODY_SCHEMA, list, target, propertyKey!)
+		if (schema) {
+			// New schema-based validation
+			const list: BodySchemaBinding<ZodTypeAny>[] = Reflect.getMetadata(META_BODY_SCHEMA, target, propertyKey!) || []
+			list.push({ index: parameterIndex!, schema })
+			Reflect.defineMetadata(META_BODY_SCHEMA, list, target, propertyKey!)
+		} else {
+			// Legacy backward compatibility - inject raw body
+			const legacyBindings = Reflect.getMetadata("route:params", target, propertyKey!) || []
+			legacyBindings.push({ index: parameterIndex!, name: "body" })
+			Reflect.defineMetadata("route:params", legacyBindings, target, propertyKey!)
+		}
 	}
 }
 

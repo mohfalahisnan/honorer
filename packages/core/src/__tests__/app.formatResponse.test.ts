@@ -44,7 +44,7 @@ class ResponseJsonErrController {
 class EnvelopeController {
 	@Get("/")
 	handle(c: any) {
-		return ApiResponse.success({ value: 1 }).toResponse(c)
+		return ApiResponse.success({ value: 1 })
 	}
 }
 
@@ -174,6 +174,8 @@ describe("createApp formatResponse=false", () => {
 	it("passes through envelope Response unchanged", async () => {
 		const app = createApp({ options: { formatResponse: false }, controllers: [EnvelopeController] })
 		const { status, body } = await getJSON(app, "/envelope")
+		console.log("Response status:", status)
+		console.log("Response body:", body)
 		expect(status).toBe(200)
 		// Envelope is preserved
 		expect(body).toEqual({ status: 200, success: true, data: { value: 1 } })
