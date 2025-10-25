@@ -1,9 +1,10 @@
-import { Hono } from "hono"
 import "reflect-metadata"
+import { Hono } from "hono"
 import onErrorHandler from "./handler/onError"
 import { registerControllers } from "./utils/registerController"
 
 export type ControllerClass<T = any> = new (...args: any[]) => T
+
 export type RouteRecord = {
 	method: string
 	path: string
@@ -14,11 +15,15 @@ export type RouteRecord = {
 export type CreateAppConfig = {
 	options?: {
 		formatResponse?: boolean
+		generateTypes?: boolean
 	}
 	controllers?: ControllerClass[]
 }
 
-export function createApp({ options = { formatResponse: true }, controllers = [] }: CreateAppConfig = {}) {
+export function createApp({
+	options = { formatResponse: true, generateTypes: true },
+	controllers = [],
+}: CreateAppConfig = {}) {
 	const app = new Hono()
 
 	app.onError(onErrorHandler)
@@ -28,7 +33,6 @@ export function createApp({ options = { formatResponse: true }, controllers = []
 	})
 
 	if (controllers.length) {
-		// Use the full config so registerControllers can read options.formatResponse
 		registerControllers(app, { options, controllers })
 	}
 

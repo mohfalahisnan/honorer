@@ -1,21 +1,17 @@
-import { serve } from "@hono/node-server";
-import { createApp } from "@honorer/core";
-import { Hono } from "hono";
-import { UsersController } from "./module/users/users.controller";
+import { serve } from "@hono/node-server"
+import { createApp } from "@honorer/core"
+import { Hono } from "hono"
+import { TodoController } from "./module/todo/todo.controller"
+import { UsersController } from "./module/users/users.controller"
 
-const rootApp = new Hono();
+const rootApp = new Hono()
 
 // Use the core app and extend it with additional routes
 const app = createApp({
-	controllers: [UsersController],
-});
+	controllers: [UsersController, TodoController],
+})
 
-const tenant = createApp({
-	controllers: [UsersController],
-});
-
-rootApp.route("/api", app);
-rootApp.route("/tenant", tenant);
+rootApp.route("/api", app)
 
 serve(
 	{
@@ -23,6 +19,6 @@ serve(
 		port: 3001,
 	},
 	(info) => {
-		console.log(`Example server running on http://localhost:${info.port}`);
+		console.log(`Example server running on http://localhost:${info.port}`)
 	},
-);
+)

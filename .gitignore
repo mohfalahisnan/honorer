@@ -11,7 +11,7 @@
 # deps
 node_modules
 dist
-
+.honorer
 # env
 .env
 .env.production
