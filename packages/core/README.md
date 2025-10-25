@@ -1,19 +1,19 @@
 # @honorer/core
 
-A small toolkit around Hono that adds TypeScript decorators, Zod-powered validation, lightweight DI, and response helpers for building clean HTTP APIs.
+A small toolkit around Hono that adds TypeScript decorators, Zod-powered validation, lightweight DI, a module system, and response helpers for building clean HTTP APIs.
 
 ## Features
 - Decorator-based controllers and routes (`@Controller`, `@Get`, `@Post`, ...)
 - Zod validation for route params, query, and body (`@Params`, `@Query`, `@Body`)
 - Simple dependency injection (`@Injectable`, `@Inject`)
+- Module system with dependency-aware registration (`@Module` + `createModularApp`)
 - Consistent response envelope (`ApiResponse`) and result normalization (`formatReturn`)
-- Optional `Database` helper with `createCrudController` for quick CRUD
 
 ## Install
 - In a generated app: already included
 - Standalone: `pnpm add @honorer/core hono`
 
-## Quick Start
+## Quick Start (Controllers)
 ```ts
 import { serve } from '@hono/node-server'
 import { createApp, Controller, Get } from '@honorer/core'
@@ -27,8 +27,35 @@ class UsersController {
   }
 }
 
-const app = createApp([UsersController])
+// Register legacy controllers (object config)
+const app = createApp({ controllers: [UsersController] })
 serve({ fetch: app.fetch, port: 3001 })
+```
+
+## Module-First Usage
+```ts
+import { createModularApp, Module, Injectable, Controller, Get } from '@honorer/core'
+import type { Context } from 'hono'
+
+@Injectable()
+class UsersService {
+  findAll() { return [{ id: '1', name: 'Ada' }] }
+}
+
+@Controller('/users')
+class UsersController {
+  constructor(private svc: UsersService) {}
+  @Get('/')
+  list(c: Context) { return c.json(this.svc.findAll()) }
+}
+
+@Module({
+  providers: [UsersService],
+  controllers: [UsersController],
+})
+class AppModule {}
+
+const app = await createModularApp({ modules: [AppModule] })
 ```
 
 ## Validation with Zod
@@ -66,18 +93,17 @@ class UsersController {
 ```ts
 import { Injectable, Inject } from '@honorer/core'
 
-@Injectable
+@Injectable()
 class UsersService { findAll() { return [{ id: '1' }] } }
 
 class UsersController {
   constructor(@Inject(UsersService) private svc: UsersService) {}
 }
 ```
-- Use `override(Token, instance)` in tests or `resetContainer()` to clear.
 
 ## Responses
 - Return plain values, `Response`, or `ApiResponse.success/error/paginated` — `formatReturn` normalizes for consistency.
-- Errors thrown as `HTTPException` or `ZodError` are mapped to `ApiResponse.error` in `createApp`.
+- Errors thrown as `HTTPException` or `ZodError` are mapped to `ApiResponse.error`.
 
 ```ts
 import { ApiResponse } from '@honorer/core'
@@ -85,19 +111,18 @@ import { ApiResponse } from '@honorer/core'
 return ApiResponse.success({ data: { id: '1' } })
 ```
 
-## Database Helper
-```ts
-import { Database } from '@honorer/core'
+## Configuration
+- `createHonorerApp({ formatResponse?: boolean; debug?: boolean; errorHandler?: (err, c) => Response })`
+- `createApp({ options, controllers, providers, modules })` registers legacy controllers and can also kick off module registration.
+- `createModularApp({ options, modules, controllers?, providers? })` prefers modules first.
 
-// Kysely-compatible connection passed to Database
-const db = new Database<any>({ dialect: /* ... */ })
-export const UsersController = db.createCrudController('users', '/users')
-```
-- Generates `list`, `getById`, `create`, `updateById`, `deleteById` routes.
+## Notes on Type Generation
+- The previous type generator and `.honorer` output have been removed. No generator configuration or type emission is performed by the core.
 
 ## Requirements
 - Node `>=20.6` recommended (works with `>=18.19`)
 - TypeScript with decorators: enable `experimentalDecorators` and `emitDecoratorMetadata`
+- Hono `^4`
 
 ## See Also
 - Scaffold a new app: `npx create-honorer-app my-app` or `pnpm dlx create-honorer-app my-app`
