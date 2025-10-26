@@ -1,11 +1,17 @@
 {
 	"name": "create-honorer-app",
-	"version": "0.1.4",
+	"version": "0.1.5",
 	"private": false,
 	"type": "module",
 	"bin": {
 		"create-honorer-app": "dist/index.js"
 	},
+	"files": [
+		"dist",
+		"package.json",
+		"README.md",
+		"templates"
+	],
 	"scripts": {
 		"dev": "tsx src/index.ts",
 		"build": "tsup",

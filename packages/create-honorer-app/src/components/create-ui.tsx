@@ -4,18 +4,13 @@ import { Box, Text } from "ink"
 import SelectInput from "ink-select-input"
 import TextInput from "ink-text-input"
 import React, { Fragment, useState } from "react"
+import { availableTemplates, templatesDir } from "../utils/templates-folder"
 
 export const CreateUI = () => {
 	const [step, setStep] = useState<"name" | "template" | "creating" | "done">("name")
 	const [projectName, setProjectName] = useState("")
 	const [_, setTemplate] = useState("")
 	const [message, setMessage] = useState("")
-
-	const templatesDir = path.resolve(process.cwd(), "../../templates")
-	const availableTemplates = fs
-		.readdirSync(templatesDir)
-		.filter((f) => fs.statSync(path.join(templatesDir, f)).isDirectory())
-		.map((t) => ({ label: t, value: t }))
 
 	const handleCreate = async (template: string) => {
 		setStep("creating")
