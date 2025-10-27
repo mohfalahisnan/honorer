@@ -32,19 +32,6 @@ describe("App Factory", () => {
 			expect(app).toBeDefined()
 		})
 
-		it("should handle default route", async () => {
-			const app = createHonorerApp()
-			const res = await app.request("/")
-			expect(res.status).toBe(200)
-
-			const data = await res.json()
-			expect(data).toEqual({
-				success: true,
-				message: "Honorer API is running",
-				data: null,
-			})
-		})
-
 		it("should apply response envelope middleware when enabled", async () => {
 			const app = createHonorerApp({ formatResponse: true })
 

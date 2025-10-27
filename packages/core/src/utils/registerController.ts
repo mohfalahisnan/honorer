@@ -15,6 +15,61 @@ import { ApiResponse, formatReturn } from "./response"
 type LegacyBindingSource = "param" | "query"
 type LegacyBinding = { index: number; source: LegacyBindingSource; name: string }
 
+// Global caches to avoid redundant reflection lookups
+const controllerPrefixCache = new WeakMap<any, string>()
+const controllerRoutesCache = new WeakMap<any, RouteRecord[]>()
+const controllerMiddlewareCache = new WeakMap<any, any[]>()
+const routeMiddlewareCache = new WeakMap<any, Map<string | symbol, any[]>>()
+const routeParamsCache = new WeakMap<any, Map<string | symbol, LegacyBinding[]>>()
+
+function getCachedPrefix(Controller: any): string {
+  const cached = controllerPrefixCache.get(Controller)
+  if (cached !== undefined) return cached
+  const prefix: string = Reflect.getMetadata("prefix", Controller) || ""
+  controllerPrefixCache.set(Controller, prefix)
+  return prefix
+}
+
+function getCachedRoutes(Controller: any): RouteRecord[] {
+  const cached = controllerRoutesCache.get(Controller)
+  if (cached !== undefined) return cached
+  const routes: RouteRecord[] = Reflect.getMetadata("routes", Controller) || []
+  controllerRoutesCache.set(Controller, routes)
+  return routes
+}
+
+function getCachedRouteParams(Controller: any, propertyKey: string | symbol): LegacyBinding[] {
+  let map = routeParamsCache.get(Controller)
+  if (!map) {
+    map = new Map<string | symbol, LegacyBinding[]>()
+    routeParamsCache.set(Controller, map)
+  }
+  if (map.has(propertyKey)) return map.get(propertyKey) as LegacyBinding[]
+  const bindings: LegacyBinding[] = Reflect.getMetadata("route:params", Controller.prototype, propertyKey) || []
+  map.set(propertyKey, bindings)
+  return bindings
+}
+
+function getCachedControllerMiddleware(Controller: any): any[] {
+  const cached = controllerMiddlewareCache.get(Controller)
+  if (cached !== undefined) return cached
+  const mws = getControllerMiddleware(Controller) || []
+  controllerMiddlewareCache.set(Controller, mws)
+  return mws
+}
+
+function getCachedRouteMiddleware(Controller: any, propertyKey: string | symbol): any[] {
+  let map = routeMiddlewareCache.get(Controller)
+  if (!map) {
+    map = new Map<string | symbol, any[]>()
+    routeMiddlewareCache.set(Controller, map)
+  }
+  if (map.has(propertyKey)) return map.get(propertyKey) as any[]
+  const mws = getRouteMiddleware(Controller.prototype, propertyKey) || []
+  map.set(propertyKey, mws)
+  return mws
+}
+
 function normalizeRoutePath(prefix: string, path: string): string {
 	const combined = `${prefix}${path}`.replace(/\/{2,}/g, "/")
 	if (combined.length > 1 && combined.endsWith("/")) return combined.slice(0, -1)
@@ -45,8 +100,8 @@ export function registerControllers(
 	}
 
 	for (const Controller of controllers) {
-		const prefix: string = Reflect.getMetadata("prefix", Controller) || ""
-		const routes: RouteRecord[] = Reflect.getMetadata("routes", Controller) || []
+		const prefix: string = getCachedPrefix(Controller)
+		const routes: RouteRecord[] = getCachedRoutes(Controller)
 
 		// Use the legacy container to resolve controllers with dependencies
 		let instance: any
@@ -64,9 +119,7 @@ export function registerControllers(
 				? ((instance as Record<string | symbol, unknown>)[propertyKey] as (...args: unknown[]) => unknown)
 				: r.handler
 			const boundHandler: (...args: unknown[]) => unknown | Promise<unknown> = methodFn!.bind(instance)
-			const bindings: LegacyBinding[] = propertyKey
-				? Reflect.getMetadata("route:params", Controller.prototype, propertyKey) || []
-				: []
+			const bindings: LegacyBinding[] = propertyKey ? getCachedRouteParams(Controller, propertyKey) : []
 
 			const paramSchemaBindings: ParamSchemaBinding<any>[] = propertyKey
 				? getParamSchemaBindings(Controller.prototype, propertyKey)
@@ -181,18 +234,19 @@ export function registerControllers(
  * This function supports the new module system and generates comprehensive types.
  */
 export async function registerControllersWithModules(
-	app: Hono<{ Bindings: AppBindings; Variables: AppVariables }>,
-	controllers: any[],
-	options: {
-		formatResponse?: boolean
-		container?: Container // Module container for DI
-	} = {},
+    app: Hono<{ Bindings: AppBindings; Variables: AppVariables }>,
+    controllers: any[],
+    options: {
+        formatResponse?: boolean
+        container?: Container // Module container for DI
+        basePath?: string // Module route prefix
+    } = {},
 ): Promise<void> {
-	const { formatResponse = true, container } = options
+    const { formatResponse = true, container, basePath = "" } = options
 
 	for (const Controller of controllers) {
-		const prefix: string = Reflect.getMetadata("prefix", Controller) || ""
-		const routes: RouteRecord[] = Reflect.getMetadata("routes", Controller) || []
+        const prefix: string = getCachedPrefix(Controller)
+        const routes: RouteRecord[] = getCachedRoutes(Controller)
 		// Use module container if provided, otherwise fall back to global resolve
 		let instance: any
 		try {
@@ -203,16 +257,17 @@ export async function registerControllersWithModules(
 			throw error
 		}
 
-		for (const r of routes) {
-			const fullPath = normalizeRoutePath(prefix, r.path)
+        // Combine module basePath with controller prefix
+        const combinedPrefix = normalizeRoutePath(basePath, prefix)
+
+        for (const r of routes) {
+            const fullPath = normalizeRoutePath(combinedPrefix, r.path)
 			const propertyKey = r.propertyKey
 			const methodFn: ((...args: unknown[]) => unknown) | undefined = propertyKey
 				? ((instance as Record<string | symbol, unknown>)[propertyKey] as (...args: unknown[]) => unknown)
 				: r.handler
 			const boundHandler: (...args: unknown[]) => unknown | Promise<unknown> = methodFn!.bind(instance)
-			const bindings: LegacyBinding[] = propertyKey
-				? Reflect.getMetadata("route:params", Controller.prototype, propertyKey) || []
-				: []
+			const bindings: LegacyBinding[] = propertyKey ? getCachedRouteParams(Controller, propertyKey) : []
 
 			const paramSchemaBindings: ParamSchemaBinding<any>[] = propertyKey
 				? getParamSchemaBindings(Controller.prototype, propertyKey)
@@ -231,8 +286,8 @@ export async function registerControllersWithModules(
 				arr.length ? arr.slice().sort((a, b) => a.index - b.index)[0].schema : undefined
 
 			// Get middleware for proper composition order
-			const controllerMiddleware = getControllerMiddleware(Controller)
-			const routeMiddleware = propertyKey ? getRouteMiddleware(Controller.prototype, propertyKey) : []
+			const controllerMiddleware = getCachedControllerMiddleware(Controller)
+			const routeMiddleware = propertyKey ? getCachedRouteMiddleware(Controller, propertyKey) : []
 
 			// Middleware composition order: Controller -> Route -> Validators -> Handler
 			const allMiddleware = [...controllerMiddleware, ...routeMiddleware]
