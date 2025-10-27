@@ -6,6 +6,7 @@ import { UserModule } from "./module/users/user.module"
 // Compose feature modules into a single AppModule
 @Module({
 	imports: [UserModule, AuthModule],
+	prefix: "/api",
 })
 export class AppModule {}
 
@@ -13,20 +14,20 @@ export class AppModule {}
 async function main() {
 	// Create app and register modules (response envelope enabled by default)
 	const app = await createModularApp({
-		options: { formatResponse: true, debug: true },
+		options: { formatResponse: true, debug: false },
 		modules: [AppModule],
 	})
 
-	// Simple health route
-	app.get("/", (c) => c.text("Hello Hono!"))
-
 	// Example route showing plain usage alongside module system
-	app.get("/example", (c) => c.json({ ok: true, message: "Using @honorer/core" }))
+	app.get("/", (c) => c.json({ ok: true, message: "Using @honorer/core" })) // formatResponse will be applied
 
-    // Start server on configurable port
-    const port = Number(process.env.PORT ?? 3001)
-    serve({ fetch: app.fetch, port })
-    console.log(`Server listening on http://localhost:${port}`)
+	// Simple health route
+	app.get("/health", (c) => c.text("Hello Hono!")) // will be response as text
+
+	// Start server on configurable port
+	const port = Number(process.env.PORT ?? 3001)
+	serve({ fetch: app.fetch, port })
+	console.log(`Server listening on http://localhost:${port}`)
 }
 
 main().catch((err) => {

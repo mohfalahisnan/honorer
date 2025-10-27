@@ -4,6 +4,7 @@ import onErrorHandler from "../handler/onError"
 import { responseEnvelopeMiddleware } from "../middleware/responseEnvelope"
 import { createModuleFactory, type ModuleRegistrationFactory } from "../module"
 import type { ModuleClass } from "../module/types"
+import { ApiResponse } from "../utils"
 
 export type AppBindings = {
 	DB?: unknown
@@ -69,12 +70,18 @@ export function createHonorerApp(config: CreateHonorerAppConfig = {}): HonorerAp
 			await next()
 		})
 		app.use("*", responseEnvelopeMiddleware())
+
+		// Format 404 responses as envelope when enabled
+		app.notFound((c) => {
+			return ApiResponse.error("Not Found", {
+				status: 404,
+				code: "NOT_FOUND",
+			}).toResponse(c)
+		})
 	} else {
 		// No envelope formatting when disabled
+		app.notFound((c) => c.text("404 Not Found", 404))
 	}
-
-	// Add default route
-	app.get("/", (c) => c.json({ success: true, message: "Honorer API is running", data: null }))
 
 	// Create module factory for this app instance
 	const moduleFactory = createModuleFactory(app, {

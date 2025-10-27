@@ -24,6 +24,13 @@ export interface ModuleRegistrationConfig {
 /**
  * Factory for registering modules with dependency injection and middleware composition.
  */
+// Helper to normalize and combine base paths
+function combineBasePath(parent: string = "", child: string = ""): string {
+    const combined = `${parent}${child}`.replace(/\/{2,}/g, "/")
+    if (combined.length > 1 && combined.endsWith("/")) return combined.slice(0, -1)
+    return combined
+}
+
 export class ModuleRegistrationFactory {
 	private registeredModules = new Set<ModuleClass>()
 	private moduleContainers = new Map<ModuleClass, Container>()
@@ -49,7 +56,7 @@ export class ModuleRegistrationFactory {
 	 *
 	 * @param moduleClass Module class to register
 	 */
-	async registerModule(moduleClass: ModuleClass): Promise<void> {
+    async registerModule(moduleClass: ModuleClass, parentBasePath: string = ""): Promise<void> {
 		// Skip if already registered
 		if (this.registeredModules.has(moduleClass)) {
 			if (this.config.debug) {
@@ -63,21 +70,26 @@ export class ModuleRegistrationFactory {
 		this.currentModuleName = moduleClass.name
 
 		try {
-			const meta = getModuleMeta(moduleClass)
-			if (!meta) {
-				throw new Error(`Module ${moduleClass.name} is missing @Module decorator`)
-			}
+            const meta = getModuleMeta(moduleClass)
+            if (!meta) {
+                throw new Error(`Module ${moduleClass.name} is missing @Module decorator`)
+            }
 
-			// Create module-scoped container
-			const moduleContainer = new Container(this.rootContainer)
-			this.moduleContainers.set(moduleClass, moduleContainer)
+            // Compute combined base path from parent and current module prefix
+            const combinedBasePath = combineBasePath(parentBasePath, meta?.prefix ?? "")
+            // Mutate meta to carry the combined base path forward
+            meta.prefix = combinedBasePath
 
-			// Register the module in dependency order
-			await this.registerImports(meta)
-			this.importExportedProviders(meta, moduleContainer)
-			this.registerProviders(meta, moduleContainer)
-			await this.registerControllers(moduleClass, meta, moduleContainer)
-			this.applyModuleMiddleware(meta)
+            // Create module-scoped container
+            const moduleContainer = new Container(this.rootContainer)
+            this.moduleContainers.set(moduleClass, moduleContainer)
+
+            // Register the module in dependency order
+            await this.registerImports(meta, combinedBasePath)
+            this.importExportedProviders(meta, moduleContainer)
+            this.registerProviders(meta, moduleContainer)
+            await this.registerControllers(moduleClass, meta, moduleContainer)
+            this.applyModuleMiddleware(meta)
 
 			// Run lifecycle init hooks if enabled
 			if (this.config.autoInit !== false) {
@@ -108,8 +120,8 @@ export class ModuleRegistrationFactory {
 	/**
 	 * Register imported modules (dependencies) first.
 	 */
-	private async registerImports(meta: ModuleMeta): Promise<void> {
-		if (!meta.imports?.length) return
+    private async registerImports(meta: ModuleMeta, parentBasePath: string): Promise<void> {
+        if (!meta.imports?.length) return
 
 		const resolvedImports: ModuleClass[] = []
 		for (const imported of meta.imports) {
@@ -145,11 +157,11 @@ export class ModuleRegistrationFactory {
 			}
 
 			resolvedImports.push(modClass)
-			await this.registerModule(modClass)
-		}
+            await this.registerModule(modClass, parentBasePath)
+        }
 
-		meta.imports = resolvedImports
-	}
+        meta.imports = resolvedImports
+    }
 
 	/**
 	 * Import exported providers from imported modules into the current module container.
