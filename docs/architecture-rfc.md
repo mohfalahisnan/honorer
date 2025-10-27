@@ -156,10 +156,18 @@ export function Injectable(target: any) {
   Reflect.defineMetadata('di:injectable', true, target)
 }
 
-export function Inject(token: ProviderToken): PropertyDecorator {
-  return (target, key) => {
-    const existing = Reflect.getMetadata('di:props', target.constructor) || []
-    Reflect.defineMetadata('di:props', [...existing, { key, token }], target.constructor)
+export function Inject(token: ProviderToken): ParameterDecorator & PropertyDecorator {
+  return (target: any, propertyKey?: string | symbol, parameterIndex?: number) => {
+    if (typeof parameterIndex === 'number') {
+      // Constructor/method parameter injection
+      const existing = Reflect.getMetadata('inject:params', target.constructor) || []
+      existing.push({ index: parameterIndex!, token })
+      Reflect.defineMetadata('inject:params', existing, target.constructor)
+    } else {
+      // Property injection
+      const existing = Reflect.getMetadata('di:props', target.constructor) || []
+      Reflect.defineMetadata('di:props', [...existing, { key: propertyKey!, token }], target.constructor)
+    }
   }
 }
 ```
@@ -238,6 +246,19 @@ Composition order:
 - Lightweight hierarchical container: root → module → controller scope, supporting overrides for tests.
 - Providers registered via `@Module({ providers: [...] })`; resolution via `Injectable`, `Inject`, and `container.resolve`.
 - Testability: `override(token, impl)` to swap providers in tests; reset with `resetContainer()`.
+
+#### Runtime Metadata Fallback
+- Constructor injection uses `design:paramtypes` when available. If the TS runner doesn’t emit it (e.g., `tsx`/esbuild), the container infers parameter count and tokens from `@Inject` indices via `inject:params` metadata.
+- This ensures services like `UsersService` still inject correctly without runtime type metadata.
+
+#### Usage Guidelines
+- Prefer value imports for DI tokens used in constructors: `import { UsersService }`.
+- Avoid `import type` for constructor tokens; type-only imports are erased at runtime and can lead to `undefined` injections.
+- Be explicit when needed: `constructor(@Inject(UsersService) svc: UsersService)` guarantees correct injection regardless of emitted metadata.
+- Mark services with `@Injectable` to enable auto-registration when not explicitly registered.
+
+#### Auto-registration
+- Dependencies annotated with `@Injectable` are auto-registered by the container if not already present, reducing boilerplate in modules.
 
 ### Example Usage
 ```ts

@@ -1,14 +1,14 @@
-export type { 
-  ModuleMeta, 
-  ModuleClass, 
-  ProviderToken, 
-  MiddlewareFn,
-  Provider,
-  ClassProvider,
-  ValueProvider,
-  FactoryProvider
-} from './types'
-export { Module, getModuleMeta } from './decorator'
-export { Container, rootContainer } from '../di/container'
-export { ModuleRegistrationFactory, createModuleFactory } from './factory'
-export type { ModuleRegistrationConfig } from './factory'
+export { Container, rootContainer } from "../di/container"
+export { getModuleMeta, Module } from "./decorator"
+export type { ModuleRegistrationConfig, OnModuleDestroy, OnModuleInit } from "./factory"
+export { createModuleFactory, ModuleRegistrationFactory } from "./factory"
+export type {
+	ClassProvider,
+	FactoryProvider,
+	MiddlewareFn,
+	ModuleClass,
+	ModuleMeta,
+	Provider,
+	ProviderToken,
+	ValueProvider,
+} from "./types"

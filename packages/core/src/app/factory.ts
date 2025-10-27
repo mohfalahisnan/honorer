@@ -1,9 +1,7 @@
 import { Hono } from "hono"
 import { createFactory } from "hono/factory"
-import { rootContainer } from "../di/container"
 import onErrorHandler from "../handler/onError"
 import { responseEnvelopeMiddleware } from "../middleware/responseEnvelope"
-import { ApiResponse } from "../utils/response"
 import { createModuleFactory, type ModuleRegistrationFactory } from "../module"
 import type { ModuleClass } from "../module/types"
 
@@ -22,7 +20,9 @@ export type AppVariables = {
 	[key: string]: unknown
 }
 
-export function honorerFactory<T extends { Bindings?: any; Variables?: any } = { Bindings: AppBindings; Variables: AppVariables }>() {
+export function honorerFactory<
+	T extends { Bindings?: any; Variables?: any } = { Bindings: AppBindings; Variables: AppVariables },
+>() {
 	return createFactory<T>()
 }
 
@@ -43,9 +43,10 @@ export interface CreateHonorerAppConfig {
 }
 
 export function createHonorerApp(config: CreateHonorerAppConfig = {}): HonorerApp {
-	const fmt = (config as any).enableResponseEnvelope !== undefined
-		? Boolean((config as any).enableResponseEnvelope)
-		: ((config as any).formatResponse ?? true)
+	const fmt =
+		(config as any).enableResponseEnvelope !== undefined
+			? Boolean((config as any).enableResponseEnvelope)
+			: ((config as any).formatResponse ?? true)
 
 	const dbg = (config as any).debug === true ? true : false
 	const errorHandler = (config as any)?.errorHandler
@@ -54,7 +55,7 @@ export function createHonorerApp(config: CreateHonorerAppConfig = {}): HonorerAp
 	// Set up error handling
 	if (errorHandler) {
 		app.onError((err, c) => {
-			c.set?.('honorer:customError', true)
+			c.set?.("honorer:customError", true)
 			return errorHandler(err, c)
 		})
 	} else {

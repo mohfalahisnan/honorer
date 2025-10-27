@@ -1,33 +1,35 @@
 import { serve } from "@hono/node-server"
-import { createModularApp, Injectable, Module } from "@honorer/core"
-import { Hono } from "hono"
-import { TodoController } from "./module/todo/todo.controller"
-import { UsersController } from "./module/users/users.controller"
+import { createModularApp, Module } from "@honorer/core"
+import { AuthModule } from "./module/auth/auth.module"
+import { UserModule } from "./module/users/user.module"
 
-const rootApp = new Hono()
-
-@Injectable()
-class UsersService {
-	findAll() {
-		return [{ id: "1", name: "Ada" }]
-	}
-}
+// Compose feature modules into a single AppModule
 @Module({
-	providers: [UsersService],
-	controllers: [UsersController, TodoController],
+	imports: [UserModule, AuthModule],
 })
-class AppModule {}
+export class AppModule {}
 
-const app = await createModularApp({ modules: [AppModule] })
+// Bootstrap the app and start a Node server
+async function main() {
+	// Create app and register modules (response envelope enabled by default)
+	const app = await createModularApp({
+		options: { formatResponse: true, debug: true },
+		modules: [AppModule],
+	})
 
-rootApp.route("/api", app)
+	// Simple health route
+	app.get("/", (c) => c.text("Hello Hono!"))
 
-serve(
-	{
-		fetch: rootApp.fetch,
-		port: 3001,
-	},
-	(info) => {
-		console.log(`Example server running on http://localhost:${info.port}`)
-	},
-)
+	// Example route showing plain usage alongside module system
+	app.get("/example", (c) => c.json({ ok: true, message: "Using @honorer/core" }))
+
+    // Start server on configurable port
+    const port = Number(process.env.PORT ?? 3001)
+    serve({ fetch: app.fetch, port })
+    console.log(`Server listening on http://localhost:${port}`)
+}
+
+main().catch((err) => {
+	console.error("Failed to start example app:", err)
+	process.exit(1)
+})
