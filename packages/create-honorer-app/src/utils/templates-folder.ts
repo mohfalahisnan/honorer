@@ -9,9 +9,18 @@ const templatesDir = isRunningFromNodeModules
 	? path.resolve(__dirname, "../templates") // npx or global install
 	: path.resolve(__dirname, "../../templates") // local dev
 
+const templatesAddDir = isRunningFromNodeModules
+	? path.resolve(__dirname, "../templates") // npx or global install
+	: path.resolve(__dirname, "../../templates") // local dev
+
 const availableTemplates = fs
 	.readdirSync(templatesDir)
 	.filter((f) => fs.statSync(path.join(templatesDir, f)).isDirectory())
 	.map((t) => ({ label: t, value: t }))
 
-export { templatesDir, availableTemplates }
+const availableAddTemplates = fs
+	.readdirSync(templatesAddDir)
+	.filter((f) => fs.statSync(path.join(templatesAddDir, f)).isDirectory())
+	.map((t) => ({ label: t, value: t }))
+
+export { templatesDir, availableTemplates, availableAddTemplates, templatesAddDir }
