@@ -2,20 +2,19 @@ import path from "node:path"
 import fs from "fs-extra"
 import { Box, Text } from "ink"
 import SelectInput from "ink-select-input"
-import TextInput from "ink-text-input"
 import { Fragment, useEffect, useState } from "react"
-import { availableTemplates, templatesDir } from "../utils/templates-folder"
+import { availableAddTemplates, templatesAddDir } from "../utils/templates-folder"
 
-export const CreateUI = () => {
-	const [step, setStep] = useState<"name" | "template" | "creating" | "done">("name")
+export const AddUI = () => {
+	const [step, setStep] = useState<"template" | "creating" | "done">("template")
 	const [projectName, setProjectName] = useState("")
 	const [_, setTemplate] = useState("")
 	const [message, setMessage] = useState("")
 
-	const handleCreate = async (template: string) => {
+	const handleAdd = async (template: string) => {
 		setStep("creating")
 		try {
-			const templateDir = path.join(templatesDir, template)
+			const templateDir = path.join(templatesAddDir, template)
 			const targetDir = path.resolve(process.cwd(), projectName)
 			await fs.copy(templateDir, targetDir, { overwrite: false })
 			setMessage(`✅ Created ${projectName} from ${template}`)
@@ -35,22 +34,15 @@ export const CreateUI = () => {
 
 	return (
 		<Fragment>
-			{step === "name" && (
-				<Box flexDirection="column">
-					<Text color="cyan">Enter project name:</Text>
-					<TextInput value={projectName} onChange={setProjectName} onSubmit={() => setStep("template")} />
-				</Box>
-			)}
-
 			{step === "template" && (
 				<Box flexDirection="column">
 					<Text color="cyan">Select template:</Text>
 					<SelectInput
-						items={availableTemplates}
+						items={availableAddTemplates}
 						onSelect={(item) => {
 							console.log("selected item", item.value)
 							setTemplate(item.value)
-							handleCreate(item.value)
+							handleAdd(item.value)
 						}}
 					/>
 				</Box>
