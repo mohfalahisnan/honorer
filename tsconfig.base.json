@@ -12,5 +12,6 @@
   "references": [
     { "path": "./packages/core" },
     { "path": "./packages/example" }
-  ]
+  ],
+  "exclude": ["templates/**/*"]
 }

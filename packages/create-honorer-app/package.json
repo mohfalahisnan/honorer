@@ -1,23 +1,42 @@
 {
 	"name": "create-honorer-app",
-	"version": "0.1.1",
+	"version": "0.1.5",
 	"private": false,
 	"type": "module",
 	"bin": {
-		"create-honorer-app": "dist/src/index.js"
+		"create-honorer-app": "dist/index.js"
 	},
+	"files": [
+		"dist",
+		"package.json",
+		"README.md",
+		"templates"
+	],
 	"scripts": {
-		"build": "tsc",
-		"start": "node index.js",
+		"dev": "tsx src/index.ts",
+		"build": "tsup",
+		"start": "node dist/index.js",
 		"prepublishOnly": "pnpm run build",
 		"test": "vitest",
 		"lint": "biome check .",
 		"lint:fix": "biome lint . --write",
 		"format": "biome format . --write"
 	},
+	"dependencies": {
+		"chalk": "^5.6.2",
+		"commander": "^12.1.0",
+		"fs-extra": "^11.3.2",
+		"ink": "^6.3.1",
+		"ink-select-input": "^6.2.0",
+		"ink-text-input": "^6.0.0",
+		"react": "^19.2.0"
+	},
 	"devDependencies": {
 		"@biomejs/biome": "^2.2.7",
+		"@types/fs-extra": "^11.0.4",
 		"@types/node": "^20.11.17",
+		"@types/react": "^19.2.2",
+		"tsup": "^8.5.0",
 		"tsx": "^4.20.6",
 		"typescript": "^5.9.3",
 		"vitest": "^4.0.1"
