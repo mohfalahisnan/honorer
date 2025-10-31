@@ -1,4 +1,4 @@
-export type { ControllerClass, CreateAppConfig, RouteRecord } from "../app"
+export type { ControllerClass, CreateAppConfig, RouteRecord } from "../app/app"
 export type { BodySchemaBinding } from "../body"
 export type { ParamSchemaBinding, ParamsContext } from "../param"
 export type { QuerySchemaBinding } from "../query"

@@ -2,7 +2,7 @@ import { Controller, Get, Post } from "@honorer/core"
 import type { Context } from "hono"
 import { beforeEach, describe, expect, it } from "vitest"
 import { createHonorerApp } from "../app/factory"
-import { getControllerMiddleware, getRouteMiddleware, Use } from "../middleware"
+import { getControllerMiddleware, getRouteMiddleware, Use } from "."
 
 // Test middleware functions
 const loggingMiddleware = async (c: Context, next: () => Promise<void>) => {

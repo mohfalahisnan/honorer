@@ -1,7 +1,7 @@
 import "reflect-metadata"
-import { createHonorerApp, type HonorerApp } from "./app/factory"
-import type { ModuleClass } from "./module/types"
-import { registerControllers } from "./utils"
+import type { ModuleClass } from "../module/types"
+import { registerControllers } from "../utils"
+import { createHonorerApp, type HonorerApp } from "./factory"
 
 export type ControllerClass<T = any> = new (...args: any[]) => T
 

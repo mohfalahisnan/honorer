@@ -2,8 +2,8 @@ export type {
 	ControllerClass,
 	CreateAppConfig,
 	RouteRecord,
-} from "./app"
-export * from "./app"
+} from "./app/app"
+export * from "./app/app"
 // Re-export key types for convenience
 export type {
 	AppBindings,

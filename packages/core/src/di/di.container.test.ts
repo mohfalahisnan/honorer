@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest"
-import { Container, rootContainer } from "../di/container"
 import { Injectable, InjectProperty } from "../inject"
+import { Container, rootContainer } from "./container"
 
 // Test classes
 @Injectable

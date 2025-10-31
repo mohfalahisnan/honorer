@@ -143,7 +143,7 @@ export class Container {
 
 		// Check parent containers
 		if (this.parent?.has(token)) {
-			return this.parent.resolve(token)
+			return this.parent.resolveWithStack(token, resolutionStack)
 		}
 
 		// If not registered anywhere, throw error

@@ -1,5 +1,5 @@
 import type { Context, Hono } from "hono"
-import type { CreateAppConfig, RouteRecord } from "../app"
+import type { CreateAppConfig, RouteRecord } from "../app/app"
 import type { AppBindings, AppVariables } from "../app/factory"
 import { getBodySchemaBindings } from "../body"
 import { Container, rootContainer } from "../di/container"
@@ -23,51 +23,51 @@ const routeMiddlewareCache = new WeakMap<any, Map<string | symbol, any[]>>()
 const routeParamsCache = new WeakMap<any, Map<string | symbol, LegacyBinding[]>>()
 
 function getCachedPrefix(Controller: any): string {
-  const cached = controllerPrefixCache.get(Controller)
-  if (cached !== undefined) return cached
-  const prefix: string = Reflect.getMetadata("prefix", Controller) || ""
-  controllerPrefixCache.set(Controller, prefix)
-  return prefix
+	const cached = controllerPrefixCache.get(Controller)
+	if (cached !== undefined) return cached
+	const prefix: string = Reflect.getMetadata("prefix", Controller) || ""
+	controllerPrefixCache.set(Controller, prefix)
+	return prefix
 }
 
 function getCachedRoutes(Controller: any): RouteRecord[] {
-  const cached = controllerRoutesCache.get(Controller)
-  if (cached !== undefined) return cached
-  const routes: RouteRecord[] = Reflect.getMetadata("routes", Controller) || []
-  controllerRoutesCache.set(Controller, routes)
-  return routes
+	const cached = controllerRoutesCache.get(Controller)
+	if (cached !== undefined) return cached
+	const routes: RouteRecord[] = Reflect.getMetadata("routes", Controller) || []
+	controllerRoutesCache.set(Controller, routes)
+	return routes
 }
 
 function getCachedRouteParams(Controller: any, propertyKey: string | symbol): LegacyBinding[] {
-  let map = routeParamsCache.get(Controller)
-  if (!map) {
-    map = new Map<string | symbol, LegacyBinding[]>()
-    routeParamsCache.set(Controller, map)
-  }
-  if (map.has(propertyKey)) return map.get(propertyKey) as LegacyBinding[]
-  const bindings: LegacyBinding[] = Reflect.getMetadata("route:params", Controller.prototype, propertyKey) || []
-  map.set(propertyKey, bindings)
-  return bindings
+	let map = routeParamsCache.get(Controller)
+	if (!map) {
+		map = new Map<string | symbol, LegacyBinding[]>()
+		routeParamsCache.set(Controller, map)
+	}
+	if (map.has(propertyKey)) return map.get(propertyKey) as LegacyBinding[]
+	const bindings: LegacyBinding[] = Reflect.getMetadata("route:params", Controller.prototype, propertyKey) || []
+	map.set(propertyKey, bindings)
+	return bindings
 }
 
 function getCachedControllerMiddleware(Controller: any): any[] {
-  const cached = controllerMiddlewareCache.get(Controller)
-  if (cached !== undefined) return cached
-  const mws = getControllerMiddleware(Controller) || []
-  controllerMiddlewareCache.set(Controller, mws)
-  return mws
+	const cached = controllerMiddlewareCache.get(Controller)
+	if (cached !== undefined) return cached
+	const mws = getControllerMiddleware(Controller) || []
+	controllerMiddlewareCache.set(Controller, mws)
+	return mws
 }
 
 function getCachedRouteMiddleware(Controller: any, propertyKey: string | symbol): any[] {
-  let map = routeMiddlewareCache.get(Controller)
-  if (!map) {
-    map = new Map<string | symbol, any[]>()
-    routeMiddlewareCache.set(Controller, map)
-  }
-  if (map.has(propertyKey)) return map.get(propertyKey) as any[]
-  const mws = getRouteMiddleware(Controller.prototype, propertyKey) || []
-  map.set(propertyKey, mws)
-  return mws
+	let map = routeMiddlewareCache.get(Controller)
+	if (!map) {
+		map = new Map<string | symbol, any[]>()
+		routeMiddlewareCache.set(Controller, map)
+	}
+	if (map.has(propertyKey)) return map.get(propertyKey) as any[]
+	const mws = getRouteMiddleware(Controller.prototype, propertyKey) || []
+	map.set(propertyKey, mws)
+	return mws
 }
 
 function normalizeRoutePath(prefix: string, path: string): string {
@@ -234,19 +234,19 @@ export function registerControllers(
  * This function supports the new module system and generates comprehensive types.
  */
 export async function registerControllersWithModules(
-    app: Hono<{ Bindings: AppBindings; Variables: AppVariables }>,
-    controllers: any[],
-    options: {
-        formatResponse?: boolean
-        container?: Container // Module container for DI
-        basePath?: string // Module route prefix
-    } = {},
+	app: Hono<{ Bindings: AppBindings; Variables: AppVariables }>,
+	controllers: any[],
+	options: {
+		formatResponse?: boolean
+		container?: Container // Module container for DI
+		basePath?: string // Module route prefix
+	} = {},
 ): Promise<void> {
-    const { formatResponse = true, container, basePath = "" } = options
+	const { formatResponse = true, container, basePath = "" } = options
 
 	for (const Controller of controllers) {
-        const prefix: string = getCachedPrefix(Controller)
-        const routes: RouteRecord[] = getCachedRoutes(Controller)
+		const prefix: string = getCachedPrefix(Controller)
+		const routes: RouteRecord[] = getCachedRoutes(Controller)
 		// Use module container if provided, otherwise fall back to global resolve
 		let instance: any
 		try {
@@ -257,11 +257,11 @@ export async function registerControllersWithModules(
 			throw error
 		}
 
-        // Combine module basePath with controller prefix
-        const combinedPrefix = normalizeRoutePath(basePath, prefix)
+		// Combine module basePath with controller prefix
+		const combinedPrefix = normalizeRoutePath(basePath, prefix)
 
-        for (const r of routes) {
-            const fullPath = normalizeRoutePath(combinedPrefix, r.path)
+		for (const r of routes) {
+			const fullPath = normalizeRoutePath(combinedPrefix, r.path)
 			const propertyKey = r.propertyKey
 			const methodFn: ((...args: unknown[]) => unknown) | undefined = propertyKey
 				? ((instance as Record<string | symbol, unknown>)[propertyKey] as (...args: unknown[]) => unknown)

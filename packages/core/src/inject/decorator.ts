@@ -7,39 +7,24 @@ const legacyContainer = new Map<any, any>()
 
 /**
  * Marks a class as injectable for dependency injection.
- * In the new system, this registers the class with the root container.
- * For backward compatibility, it also registers with the legacy container.
- * Can be used as @Injectable or @Injectable()
+ * Registers with the root container and legacy container for backward compatibility.
  */
 export function Injectable(target?: any): any {
-	// If called with target directly (@Injectable)
 	if (target) {
 		Reflect.defineMetadata("di:injectable", true, target)
-
-		// Register with new hierarchical container
 		rootContainer.register(target)
-
 		return target
 	}
 
-	// If called as factory (@Injectable())
 	return (target: any) => {
 		Reflect.defineMetadata("di:injectable", true, target)
-
-		// Register with new hierarchical container
 		rootContainer.register(target)
-
 		return target
 	}
 }
 
 /**
  * Parameter decorator to inject a dependency by constructor token.
- * The token can be a class constructor or provider key. When applied to a class
- * constructor parameter, the token is recorded in metadata and used by `resolve`
- * to instantiate the class with dependencies.
- *
- * @param token Constructor token to resolve from the container.
  */
 export const Inject = <T>(token: new (...args: any[]) => T): ParameterDecorator => {
 	return (target: Object, _key: string | symbol | undefined, index: number) => {
@@ -51,9 +36,6 @@ export const Inject = <T>(token: new (...args: any[]) => T): ParameterDecorator 
 
 /**
  * Property decorator to inject a dependency into a class property.
- * This is the new preferred way for property injection in the module system.
- *
- * @param token Provider token to inject
  */
 export function InjectProperty(token: ProviderToken): PropertyDecorator {
 	return (target, propertyKey) => {
@@ -63,39 +45,64 @@ export function InjectProperty(token: ProviderToken): PropertyDecorator {
 }
 
 /**
- * Resolve an instance of the given class, recursively instantiating and injecting
- * its constructor dependencies based on recorded `Inject` metadata or design-time
- * types from `reflect-metadata`.
- *
- * This function maintains backward compatibility with the legacy container
- * while also supporting the new hierarchical container system.
- *
- * @param target Class constructor to instantiate.
- * @returns Resolved instance with injected dependencies.
+ * Resolve an instance with circular dependency protection.
  */
-export function resolve<T>(target: new (...args: any[]) => T): T {
-	// Try new container first
-	if (rootContainer.has(target)) {
-		return rootContainer.resolve(target)
+export function resolve<T>(target: new (...args: any[]) => T, resolutionStack = new Set<any>()): T {
+	// Legacy container check
+	if (legacyContainer.has(target)) return legacyContainer.get(target)
+
+	if (resolutionStack.has(target)) {
+		throw new Error(`Circular dependency detected: ${target.name || target.toString()}`)
+	}
+	resolutionStack.add(target)
+
+	// Try both class constructor and prototype for design:paramtypes
+	const paramTypes: any[] =
+		Reflect.getMetadata("design:paramtypes", target) ??
+		Reflect.getMetadata("design:paramtypes", (target as any).prototype) ??
+		[]
+	const injectParams: { index: number; token: any }[] = Reflect.getMetadata("inject:params", target) || []
+
+	// Infer constructor parameter count when design:paramtypes is missing (common with esbuild/tsx)
+	const inferredParamCount = (() => {
+		if (paramTypes.length > 0) return paramTypes.length
+		if (injectParams.length === 0) return 0
+		return injectParams.reduce((max, inj) => Math.max(max, inj.index), -1) + 1
+	})()
+
+	const dependencies = Array.from({ length: inferredParamCount }, (_, i) => {
+		// Prefer @Inject token if present, otherwise use design type
+		const injectParam = injectParams.find((p) => p.index === i)
+		const token = injectParam?.token ?? paramTypes[i]
+
+		// If neither source provided a token, pass undefined
+		if (!token) return undefined
+
+		try {
+			return rootContainer.resolve(token)
+		} catch {
+			return resolve(token as any, resolutionStack)
+		}
+	})
+
+	const instance = new target(...dependencies)
+
+	// Property injection
+	const injectProps: { key: string | symbol; token: any }[] = Reflect.getMetadata("di:props", target) || []
+	for (const { key, token } of injectProps) {
+		try {
+			;(instance as any)[key] = rootContainer.resolve(token)
+		} catch {
+			;(instance as any)[key] = resolve(token, resolutionStack)
+		}
 	}
 
-	// Fall back to legacy behavior for backward compatibility
-	const injections = Reflect.getMetadata("inject:params", target) || []
-	const paramTypes = Reflect.getMetadata("design:paramtypes", target) || []
-	const params: any[] = paramTypes.map((p: any, i: number) => {
-		const token = injections.find((x: any) => x.index === i)?.token ?? p
-		if (!legacyContainer.has(token)) legacyContainer.set(token, resolve(token))
-		return legacyContainer.get(token)
-	})
-	return new target(...params)
+	resolutionStack.delete(target)
+	return instance
 }
 
 /**
  * Override the instance bound to a token in the container.
- * Useful for testing with mocks or for providing custom implementations.
- *
- * @param token Constructor token to override.
- * @param mock Instance to associate with the token.
  */
 export function override<T>(token: new (...args: any[]) => T, mock: T): void {
 	legacyContainer.set(token, mock)
@@ -103,8 +110,7 @@ export function override<T>(token: new (...args: any[]) => T, mock: T): void {
 }
 
 /**
- * Reset the DI container, clearing all registered instances.
- * Use with caution; this will drop all singletons and cached providers.
+ * Reset the DI container.
  */
 export function resetContainer(): void {
 	legacyContainer.clear()

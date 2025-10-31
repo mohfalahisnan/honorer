@@ -20,5 +20,10 @@ export default defineConfig({
 		clearMocks: true,
 		mockReset: true,
 		restoreMocks: true,
+		coverage: {
+			provider: "istanbul",
+			include: ["src/**"],
+			enabled: true,
+		},
 	},
 })
