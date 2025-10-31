@@ -2,6 +2,9 @@
 
 A small toolkit around Hono that adds TypeScript decorators, Zod-powered validation, lightweight DI, a module system, and response helpers for building clean HTTP APIs.
 
+## Philosophy
+Honorer aims to stay under 5 KB gzipped, rely on Hono’s speed, and remain framework-agnostic.
+
 ## Features
 - Decorator-based controllers and routes (`@Controller`, `@Get`, `@Post`, ...)
 - Zod validation for route params, query, and body (`@Params`, `@Query`, `@Body`)
@@ -13,7 +16,7 @@ A small toolkit around Hono that adds TypeScript decorators, Zod-powered validat
 - In a generated app: already included
 - Standalone: `pnpm add @honorer/core hono`
 
-## Quick Start (Controllers)
+## Controller-First Quick Start
 ```ts
 import { serve } from '@hono/node-server'
 import { createApp, Controller, Get } from '@honorer/core'
